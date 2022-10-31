@@ -48,24 +48,12 @@ import com.google.mlkit.vision.demo.CameraXViewModel
 import com.google.mlkit.vision.demo.GraphicOverlay
 import com.google.mlkit.vision.demo.R
 import com.google.mlkit.vision.demo.VisionImageProcessor
-import com.google.mlkit.vision.demo.kotlin.barcodescanner.BarcodeScannerProcessor
-import com.google.mlkit.vision.demo.kotlin.facedetector.FaceDetectorProcessor
-import com.google.mlkit.vision.demo.kotlin.labeldetector.LabelDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.objectdetector.ObjectDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.posedetector.PoseDetectorProcessor
 import com.google.mlkit.vision.demo.kotlin.segmenter.SegmenterProcessor
-import com.google.mlkit.vision.demo.kotlin.facemeshdetector.FaceMeshDetectorProcessor;
-import com.google.mlkit.vision.demo.kotlin.textdetector.TextRecognitionProcessor
 import com.google.mlkit.vision.demo.preference.PreferenceUtils
 import com.google.mlkit.vision.demo.preference.SettingsActivity
 import com.google.mlkit.vision.demo.preference.SettingsActivity.LaunchSource
-import com.google.mlkit.vision.label.custom.CustomImageLabelerOptions
-import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
-import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
-import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
-import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
-import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.util.ArrayList
 
 /** Live preview demo app for ML Kit APIs using CameraX. */
@@ -127,19 +115,8 @@ class CameraXLivePreviewActivity :
     options.add(OBJECT_DETECTION)
     options.add(OBJECT_DETECTION_CUSTOM)
     options.add(CUSTOM_AUTOML_OBJECT_DETECTION)
-    options.add(FACE_DETECTION)
-    options.add(BARCODE_SCANNING)
-    options.add(IMAGE_LABELING)
-    options.add(IMAGE_LABELING_CUSTOM)
-    options.add(CUSTOM_AUTOML_LABELING)
     options.add(POSE_DETECTION)
     options.add(SELFIE_SEGMENTATION)
-    options.add(TEXT_RECOGNITION_LATIN)
-    options.add(TEXT_RECOGNITION_CHINESE)
-    options.add(TEXT_RECOGNITION_DEVANAGARI)
-    options.add(TEXT_RECOGNITION_JAPANESE)
-    options.add(TEXT_RECOGNITION_KOREAN)
-    options.add(FACE_MESH_DETECTION)
 
     // Creating adapter for spinner
     val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, options)
@@ -151,6 +128,14 @@ class CameraXLivePreviewActivity :
     // cam switching
     val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
     facingSwitch.setOnCheckedChangeListener(this)
+
+    val settingsButton = findViewById<ImageView>(R.id.settings_button)
+    settingsButton.setOnClickListener {
+      val intent = Intent(applicationContext, SettingsActivity::class.java)
+      intent.putExtra(SettingsActivity.EXTRA_LAUNCH_SOURCE, LaunchSource.CAMERAX_LIVE_PREVIEW)
+      startActivity(intent)
+    }
+    //--------------------------------- xml connections done ---------------------------------------
 
     /**
      * ViewModel
@@ -192,8 +177,10 @@ class CameraXLivePreviewActivity :
      *
      * The Singleton Pattern is a software design pattern that restricts the instantiation of a class to just “one” instance.
      *
-     * */
+     */
+    // To Bind CameraX useCases
     // Creating a ViewModel that can interact with CameraX with live data because it will be observed by ProcessCameraProvider!!
+    // ! Sets the cameraProvider and bind UseCase of CameraX, show use of CameraX tutorial
     ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application))
       .get(CameraXViewModel::class.java)
       .processCameraProvider
@@ -205,14 +192,10 @@ class CameraXLivePreviewActivity :
         }
       )
 
-    val settingsButton = findViewById<ImageView>(R.id.settings_button)
-    settingsButton.setOnClickListener {
-      val intent = Intent(applicationContext, SettingsActivity::class.java)
-      intent.putExtra(SettingsActivity.EXTRA_LAUNCH_SOURCE, LaunchSource.CAMERAX_LIVE_PREVIEW)
-      startActivity(intent)
-    }
+
   }
 
+  // ---------------------- handel Adaptor -----------------------------------------
   // when the selected model change
   override fun onSaveInstanceState(bundle: Bundle) {
     super.onSaveInstanceState(bundle)
@@ -225,14 +208,17 @@ class CameraXLivePreviewActivity :
     // parent.getItemAtPosition(pos)
     selectedModel = parent?.getItemAtPosition(pos).toString()
     Log.d(TAG, "Selected model: $selectedModel")
+    // * he rebind the AnalysisUseCase, cus the adaptor will effect only the type of analysis
     bindAnalysisUseCase()
   }
 
   override fun onNothingSelected(parent: AdapterView<*>?) {
     // Do nothing.
   }
+  // ---------------------- handel Adaptor -----------------------------------------
 
   // when cam changes
+  // * in case of changing the cam/Lens, rebind all cases
   override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
     if (cameraProvider == null) {
       return
@@ -345,6 +331,15 @@ class CameraXLivePreviewActivity :
     if (imageProcessor != null) {
       imageProcessor!!.stop()
     }
+    /**
+     *  ! all object detectors, first three cases, pass is Processor Builder and its Options to
+     *  @return ObjectDetectorProcessor
+     *
+     *  ? Notice that PreferenceUtils is used to get the Options of the the processor
+     *  PreferenceUtils: Utility class to retrieve shared preferences
+     *
+     *  * so our imageProcessor will be instance of ObjectDetectorProcessor or PoseDetectorProcessor
+     *  */
     imageProcessor =
       try {
         when (selectedModel) {
@@ -352,6 +347,7 @@ class CameraXLivePreviewActivity :
             Log.i(TAG, "Using Object Detector Processor")
             val objectDetectorOptions =
               PreferenceUtils.getObjectDetectorOptionsForLivePreview(this)
+            /* ! this is what will be assign to imageProcessor */
             ObjectDetectorProcessor(this, objectDetectorOptions)
           }
           OBJECT_DETECTION_CUSTOM -> {
@@ -376,67 +372,6 @@ class CameraXLivePreviewActivity :
               )
             ObjectDetectorProcessor(this, customAutoMLODTOptions)
           }
-          TEXT_RECOGNITION_LATIN -> {
-            Log.i(TAG, "Using on-device Text recognition Processor for Latin")
-            TextRecognitionProcessor(this, TextRecognizerOptions.Builder().build())
-          }
-          TEXT_RECOGNITION_CHINESE -> {
-            Log.i(TAG,
-              "Using on-device Text recognition Processor for Latin and Chinese")
-            TextRecognitionProcessor(this,
-              ChineseTextRecognizerOptions.Builder().build())
-          }
-          TEXT_RECOGNITION_DEVANAGARI -> {
-            Log.i(TAG,
-              "Using on-device Text recognition Processor for Latin and Devanagari")
-            TextRecognitionProcessor(this,
-              DevanagariTextRecognizerOptions.Builder().build())
-          }
-          TEXT_RECOGNITION_JAPANESE -> {
-            Log.i(TAG,
-              "Using on-device Text recognition Processor for Latin and Japanese")
-            TextRecognitionProcessor(this,
-              JapaneseTextRecognizerOptions.Builder().build())
-          }
-          TEXT_RECOGNITION_KOREAN -> {
-            Log.i(TAG,
-              "Using on-device Text recognition Processor for Latin and Korean")
-            TextRecognitionProcessor(this,
-              KoreanTextRecognizerOptions.Builder().build())
-          }
-          FACE_DETECTION -> {
-            Log.i(TAG, "Using Face Detector Processor")
-            val faceDetectorOptions = PreferenceUtils.getFaceDetectorOptions(this)
-            FaceDetectorProcessor(this, faceDetectorOptions)
-          }
-          BARCODE_SCANNING -> {
-            Log.i(TAG, "Using Barcode Detector Processor")
-            BarcodeScannerProcessor(this)
-          }
-          IMAGE_LABELING -> {
-            Log.i(TAG, "Using Image Label Detector Processor")
-            LabelDetectorProcessor(this, ImageLabelerOptions.DEFAULT_OPTIONS)
-          }
-          IMAGE_LABELING_CUSTOM -> {
-            Log.i(TAG, "Using Custom Image Label (Birds) Detector Processor")
-            val localClassifier =
-              LocalModel.Builder()
-                .setAssetFilePath("custom_models/bird_classifier.tflite").build()
-            val customImageLabelerOptions =
-              CustomImageLabelerOptions.Builder(localClassifier).build()
-            LabelDetectorProcessor(this, customImageLabelerOptions)
-          }
-          CUSTOM_AUTOML_LABELING -> {
-            Log.i(TAG, "Using Custom AutoML Image Label Detector Processor")
-            val customAutoMLLabelLocalModel =
-              LocalModel.Builder().setAssetManifestFilePath("automl/manifest.json")
-                .build()
-            val customAutoMLLabelOptions =
-              CustomImageLabelerOptions.Builder(customAutoMLLabelLocalModel)
-                .setConfidenceThreshold(0f)
-                .build()
-            LabelDetectorProcessor(this, customAutoMLLabelOptions)
-          }
           // ! here wt we need
           POSE_DETECTION -> {
             val poseDetectorOptions =
@@ -459,7 +394,6 @@ class CameraXLivePreviewActivity :
             )
           }
           SELFIE_SEGMENTATION -> SegmenterProcessor(this)
-          FACE_MESH_DETECTION -> FaceMeshDetectorProcessor(this)
           else -> throw IllegalStateException("Invalid model name")
         }
       } catch (e: Exception) {
@@ -468,11 +402,11 @@ class CameraXLivePreviewActivity :
           applicationContext,
           "Can not create image processor: " + e.localizedMessage,
           Toast.LENGTH_LONG
-        )
-          .show()
+        ).show()
         return
       }
 
+    // ! Use Case Builder
     val builder = ImageAnalysis.Builder()
     val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
     if (targetResolution != null) {
@@ -482,11 +416,20 @@ class CameraXLivePreviewActivity :
 
     needUpdateGraphicOverlayImageSourceInfo = true
 
+    /**
+     * @param Executor
+     * @param Analyzer of the image */
     analysisUseCase?.setAnalyzer(
       // imageProcessor.processImageProxy will use another thread to run the detection underneath,
       // thus we can just runs the analyzer itself on main thread.
+      /**
+       * *  ContextCompat: Helper for accessing features in Context.
+       * * getMainExecutor: Return an Executor that will run enqueued tasks on the main thread associated with this context.
+       * This is the thread used to dispatch calls to application components (activities, services, etc).
+       * */
       ContextCompat.getMainExecutor(this),
       ImageAnalysis.Analyzer { imageProxy: ImageProxy ->
+        /* ------------------- * Rotation Handling ------------------------------------- */
         if (needUpdateGraphicOverlayImageSourceInfo) {
           val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
           val rotationDegrees = imageProxy.imageInfo.rotationDegrees
@@ -497,8 +440,12 @@ class CameraXLivePreviewActivity :
           }
           needUpdateGraphicOverlayImageSourceInfo = false
         }
+        /* ------------------- * Rotation Handling Done ------------------------------- */
+
         try {
+          // ! here what is important
           imageProcessor!!.processImageProxy(imageProxy, graphicOverlay)
+
         } catch (e: MlKitException) {
           Log.e(TAG, "Failed to process image. Error: " + e.localizedMessage)
           Toast.makeText(applicationContext, e.localizedMessage, Toast.LENGTH_SHORT).show()
@@ -513,19 +460,8 @@ class CameraXLivePreviewActivity :
     private const val OBJECT_DETECTION = "Object Detection"
     private const val OBJECT_DETECTION_CUSTOM = "Custom Object Detection"
     private const val CUSTOM_AUTOML_OBJECT_DETECTION = "Custom AutoML Object Detection (Flower)"
-    private const val FACE_DETECTION = "Face Detection"
-    private const val TEXT_RECOGNITION_LATIN = "Text Recognition Latin"
-    private const val TEXT_RECOGNITION_CHINESE = "Text Recognition Chinese (Beta)"
-    private const val TEXT_RECOGNITION_DEVANAGARI = "Text Recognition Devanagari (Beta)"
-    private const val TEXT_RECOGNITION_JAPANESE = "Text Recognition Japanese (Beta)"
-    private const val TEXT_RECOGNITION_KOREAN = "Text Recognition Korean (Beta)"
-    private const val BARCODE_SCANNING = "Barcode Scanning"
-    private const val IMAGE_LABELING = "Image Labeling"
-    private const val IMAGE_LABELING_CUSTOM = "Custom Image Labeling (Birds)"
-    private const val CUSTOM_AUTOML_LABELING = "Custom AutoML Image Labeling (Flower)"
     private const val POSE_DETECTION = "Pose Detection"
     private const val SELFIE_SEGMENTATION = "Selfie Segmentation"
-    private const val FACE_MESH_DETECTION = "Face Mesh Detection (Beta)";
 
     private const val STATE_SELECTED_MODEL = "selected_model"
   }

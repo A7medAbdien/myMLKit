@@ -55,7 +55,7 @@ class ObjectDetectorProcessor(context: Context, options: ObjectDetectorOptionsBa
   override fun onSuccess(results: List<DetectedObject>, graphicOverlay: GraphicOverlay) {
     for (result in results) {
       graphicOverlay.add(ObjectGraphic(graphicOverlay, result))
-
+      // ! me ^^
       Log.d("Rect coord",(result.boundingBox.exactCenterX().toInt() to result.boundingBox.exactCenterY().toInt()).toString())
     }
   }
