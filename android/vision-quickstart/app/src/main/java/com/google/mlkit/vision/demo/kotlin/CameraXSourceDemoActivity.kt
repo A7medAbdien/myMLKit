@@ -52,7 +52,13 @@ import kotlin.collections.List
 @KeepName
 @RequiresApi(VERSION_CODES.LOLLIPOP)
 class CameraXSourceDemoActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
+  /* Custom View that displays the camera feed for CameraX's Preview use case. */
   private var previewView: PreviewView? = null
+  /**
+   * A view which renders a series of custom graphics to be overlayed on top of an associated preview
+   * (i.e., the camera preview). The creator can add graphics objects, update the objects, and remove
+   * them, triggering the appropriate drawing and invalidation within the view.
+   */
   private var graphicOverlay: GraphicOverlay? = null
   private var needUpdateGraphicOverlayImageSourceInfo = false
   private var lensFacing: Int = CameraSourceConfig.CAMERA_FACING_BACK
@@ -61,6 +67,7 @@ class CameraXSourceDemoActivity : AppCompatActivity(), CompoundButton.OnCheckedC
   private var targetResolution: Size? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    // XML connections
     super.onCreate(savedInstanceState)
     Log.d(TAG, "onCreate")
     setContentView(R.layout.activity_vision_cameraxsource_demo)
@@ -122,29 +129,37 @@ class CameraXSourceDemoActivity : AppCompatActivity(), CompoundButton.OnCheckedC
   }
 
   private fun createThenStartCameraXSource() {
+    // if it is open close it
     if (cameraXSource != null) {
       cameraXSource!!.close()
     }
+    // trying to ReBuild the model
+    // 1. create Options
     customObjectDetectorOptions =
       PreferenceUtils.getCustomObjectDetectorOptionsForLivePreview(
         getApplicationContext(),
         localModel
       )
+    // 2. create Detector with those Options
     val objectDetector: ObjectDetector = ObjectDetection.getClient(customObjectDetectorOptions!!)
+    // 3. since it is an API, we will get the results as a callback list
     var detectionTaskCallback: DetectionTaskCallback<List<DetectedObject>> =
       DetectionTaskCallback<List<DetectedObject>> { detectionTask ->
         detectionTask
           .addOnSuccessListener { results -> onDetectionTaskSuccess(results) }
           .addOnFailureListener { e -> onDetectionTaskFailure(e) }
       }
+    // 4. Builder
     val builder: CameraSourceConfig.Builder =
       CameraSourceConfig.Builder(getApplicationContext(), objectDetector!!, detectionTaskCallback)
         .setFacing(lensFacing)
+    // some additional settings - resolution
     targetResolution =
       PreferenceUtils.getCameraXTargetResolution(getApplicationContext(), lensFacing)
     if (targetResolution != null) {
       builder.setRequestedPreviewSize(targetResolution!!.width, targetResolution!!.height)
     }
+    // 5. new instance of CameraXSource
     cameraXSource = CameraXSource(builder.build(), previewView!!)
     needUpdateGraphicOverlayImageSourceInfo = true
     cameraXSource!!.start()
@@ -152,6 +167,7 @@ class CameraXSourceDemoActivity : AppCompatActivity(), CompoundButton.OnCheckedC
 
   private fun onDetectionTaskSuccess(results: List<DetectedObject>) {
     graphicOverlay!!.clear()
+    // ImageSourceInfo cases!!
     if (needUpdateGraphicOverlayImageSourceInfo) {
       val size: Size = cameraXSource!!.getPreviewSize()!!
       if (size != null) {
@@ -172,14 +188,18 @@ class CameraXSourceDemoActivity : AppCompatActivity(), CompoundButton.OnCheckedC
       }
     }
     Log.v(TAG, "Number of object been detected: " + results.size)
+
+    /** Draw the detected object info in preview.  */
     for (`object` in results) {
       graphicOverlay!!.add(ObjectGraphic(graphicOverlay!!, `object`))
     }
+
+    /** Graphic instance for rendering inference info (latency, FPS, resolution) in an overlay view. */
     graphicOverlay!!.add(InferenceInfoGraphic(graphicOverlay!!))
     graphicOverlay!!.postInvalidate()
   }
 
-  private fun onDetectionTaskFailure(e: Exception) {
+  private fun onDetectionTaskFailure(e: Exception) { // Show why
     graphicOverlay!!.clear()
     graphicOverlay!!.postInvalidate()
     val error = "Failed to process. Error: " + e.localizedMessage

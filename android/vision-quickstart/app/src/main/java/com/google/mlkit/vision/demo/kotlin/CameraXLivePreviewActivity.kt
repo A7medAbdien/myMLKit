@@ -73,25 +73,46 @@ import java.util.ArrayList
 @RequiresApi(VERSION_CODES.LOLLIPOP)
 class CameraXLivePreviewActivity :
   AppCompatActivity(), OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
-
+  // Custom View that displays the camera feed for CameraX's Preview use case.
+  // This class manages the Surface lifecycle, as well as the preview aspect ratio and orientation.
+  // ! Internally, it uses either a TextureView or SurfaceView to display the camera feed.
   private var previewView: PreviewView? = null
   private var graphicOverlay: GraphicOverlay? = null
+
+  // used to bind the lifecycle of cameras to any LifecycleOwner within an application's process.
   private var cameraProvider: ProcessCameraProvider? = null
+
+  // camera preview stream for displaying on-screen
   private var previewUseCase: Preview? = null
+  // CPU accessible images for an app to perform image analysis on.
+  /**
+   * ImageAnalysis acquires images from the camera via an ImageReader.
+   * Each image is provided to an ImageAnalysis.Analyzer function which can be implemented by application code,
+   * where it can access image data for application analysis via an ImageProxy.
+   */
+  // provides CPU-accessible buffers for analysis, such as for machine learning inference :)
   private var analysisUseCase: ImageAnalysis? = null
+
+  // An interface to process the images with different vision detectors and custom image models.
   private var imageProcessor: VisionImageProcessor? = null
   private var needUpdateGraphicOverlayImageSourceInfo = false
   private var selectedModel = OBJECT_DETECTION
+
+  // CameraSelector: A set of requirements and priorities used to select a camera or return a filtered set of cameras.
   private var lensFacing = CameraSelector.LENS_FACING_BACK
   private var cameraSelector: CameraSelector? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Log.d(TAG, "onCreate")
+    // insure a safe state if nothing got selected !!
     if (savedInstanceState != null) {
       selectedModel = savedInstanceState.getString(STATE_SELECTED_MODEL, OBJECT_DETECTION)
     }
+    // that will select our camera
     cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+
+    //----------- xml connections -----------
     setContentView(R.layout.activity_vision_camerax_live_preview)
     previewView = findViewById(R.id.preview_view)
     if (previewView == null) {
@@ -127,8 +148,52 @@ class CameraXLivePreviewActivity :
     // attaching data adapter to spinner
     spinner.adapter = dataAdapter
     spinner.onItemSelectedListener = this
+    // cam switching
     val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
     facingSwitch.setOnCheckedChangeListener(this)
+
+    /**
+     * ViewModel
+     * is a class that is responsible for preparing and managing the data for an Activity or a Fragment.
+     * It also handles the communication of the Activity / Fragment with the rest of the application
+     * (e.g. calling the business logic classes).
+     *
+     * ViewModelProvider
+     * A utility class that provides ViewModels for a scope.
+     *
+     * ViewModelProvider.Factory which may create AndroidViewModel and ViewModel, which have an empty constructor.
+     *
+     * getInstance:
+     * Retrieve a singleton instance of AndroidViewModelFactory.
+     *
+     * @param application an application to pass in {@link AndroidViewModel}
+     * @return A valid {@link AndroidViewModelFactory}
+     *
+     * get:
+     * Returns an existing ViewModel or creates a new one in the scope (usually, a fragment or an activity),
+     * associated with this ViewModelProvider.
+     *
+     * CameraXViewModel:
+     * View model for interacting with CameraX.
+     *
+     * processCameraProvider:
+     * Create an instance which interacts with the camera service via the given application context.
+     *
+     * LiveData:
+     * LiveData is a data holder class that can be observed within a given lifecycle.
+     *
+     * observe:
+     * Adds the given observer to the observers list within the lifespan of the given owner.
+     * @param owner    The LifecycleOwner which controls the observer
+     * @param observer The observer that will receive the events
+     *
+     * ProcessCameraProvider:
+     * A singleton which can be used to bind the lifecycle of cameras to any LifecycleOwner within an application's process.
+     *
+     * The Singleton Pattern is a software design pattern that restricts the instantiation of a class to just “one” instance.
+     *
+     * */
+    // Creating a ViewModel that can interact with CameraX with live data because it will be observed by ProcessCameraProvider!!
     ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application))
       .get(CameraXViewModel::class.java)
       .processCameraProvider
@@ -148,6 +213,7 @@ class CameraXLivePreviewActivity :
     }
   }
 
+  // when the selected model change
   override fun onSaveInstanceState(bundle: Bundle) {
     super.onSaveInstanceState(bundle)
     bundle.putString(STATE_SELECTED_MODEL, selectedModel)
@@ -166,6 +232,7 @@ class CameraXLivePreviewActivity :
     // Do nothing.
   }
 
+  // when cam changes
   override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
     if (cameraProvider == null) {
       return
@@ -189,10 +256,10 @@ class CameraXLivePreviewActivity :
       // Falls through
     }
     Toast.makeText(
-        applicationContext,
-        "This device does not have lens with facing: $newLensFacing",
-        Toast.LENGTH_SHORT
-      )
+      applicationContext,
+      "This device does not have lens with facing: $newLensFacing",
+      Toast.LENGTH_SHORT
+    )
       .show()
   }
 
@@ -221,6 +288,9 @@ class CameraXLivePreviewActivity :
     }
   }
 
+  // here the preview is known and previewUseCase is known and they will be bind with cameraProvider
+  // to receive the camera data
+  // * preview Use case
   private fun bindPreviewUseCase() {
     if (!PreferenceUtils.isCameraLiveViewportEnabled(this)) {
       return
@@ -233,15 +303,38 @@ class CameraXLivePreviewActivity :
     }
 
     val builder = Preview.Builder()
+    //  handel settings
     val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
     if (targetResolution != null) {
       builder.setTargetResolution(targetResolution)
     }
     previewUseCase = builder.build()
+    // This interface is implemented by the application to provide a Surface.
+    // This will be called by CameraX when it needs a Surface for Preview.
+    // It also signals when the Surface is no longer in use by CameraX.
     previewUseCase!!.setSurfaceProvider(previewView!!.getSurfaceProvider())
-    cameraProvider!!.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector!!, previewUseCase)
+    /**
+     * @param lifecycleOwner The lifecycleOwner which controls the lifecycle transitions of the use
+     *                       cases.
+     * @param cameraSelector The camera selector which determines the camera to use for set of
+     *                       use cases.
+     * @param useCases       The use cases to bind to a lifecycle.
+     *
+     * @return The {@link Camera} instance which is determined by the camera selector and
+     * internal requirements.
+     *
+     * @throws IllegalStateException    If the use case has already been bound to another lifecycle
+     *                                  or method is not called on main thread.
+     * @throws IllegalArgumentException If the provided camera selector is unable to resolve a
+     *                                  camera to be used for the given use cases.
+     */
+    cameraProvider!!.bindToLifecycle(/* lifecycleOwner= */ this,
+      cameraSelector!!,
+      previewUseCase)
   }
 
+  // the cameraProvider is known, previewUseCase and previewProvider are UnKnown
+  // * Analysis use case
   private fun bindAnalysisUseCase() {
     if (cameraProvider == null) {
       return
@@ -257,21 +350,25 @@ class CameraXLivePreviewActivity :
         when (selectedModel) {
           OBJECT_DETECTION -> {
             Log.i(TAG, "Using Object Detector Processor")
-            val objectDetectorOptions = PreferenceUtils.getObjectDetectorOptionsForLivePreview(this)
+            val objectDetectorOptions =
+              PreferenceUtils.getObjectDetectorOptionsForLivePreview(this)
             ObjectDetectorProcessor(this, objectDetectorOptions)
           }
           OBJECT_DETECTION_CUSTOM -> {
             Log.i(TAG, "Using Custom Object Detector (with object labeler) Processor")
             val localModel =
-              LocalModel.Builder().setAssetFilePath("custom_models/object_labeler.tflite").build()
+              LocalModel.Builder()
+                .setAssetFilePath("custom_models/object_labeler.tflite").build()
             val customObjectDetectorOptions =
-              PreferenceUtils.getCustomObjectDetectorOptionsForLivePreview(this, localModel)
+              PreferenceUtils.getCustomObjectDetectorOptionsForLivePreview(this,
+                localModel)
             ObjectDetectorProcessor(this, customObjectDetectorOptions)
           }
           CUSTOM_AUTOML_OBJECT_DETECTION -> {
             Log.i(TAG, "Using Custom AutoML Object Detector Processor")
             val customAutoMLODTLocalModel =
-              LocalModel.Builder().setAssetManifestFilePath("automl/manifest.json").build()
+              LocalModel.Builder().setAssetManifestFilePath("automl/manifest.json")
+                .build()
             val customAutoMLODTOptions =
               PreferenceUtils.getCustomObjectDetectorOptionsForLivePreview(
                 this,
@@ -284,20 +381,28 @@ class CameraXLivePreviewActivity :
             TextRecognitionProcessor(this, TextRecognizerOptions.Builder().build())
           }
           TEXT_RECOGNITION_CHINESE -> {
-            Log.i(TAG, "Using on-device Text recognition Processor for Latin and Chinese")
-            TextRecognitionProcessor(this, ChineseTextRecognizerOptions.Builder().build())
+            Log.i(TAG,
+              "Using on-device Text recognition Processor for Latin and Chinese")
+            TextRecognitionProcessor(this,
+              ChineseTextRecognizerOptions.Builder().build())
           }
           TEXT_RECOGNITION_DEVANAGARI -> {
-            Log.i(TAG, "Using on-device Text recognition Processor for Latin and Devanagari")
-            TextRecognitionProcessor(this, DevanagariTextRecognizerOptions.Builder().build())
+            Log.i(TAG,
+              "Using on-device Text recognition Processor for Latin and Devanagari")
+            TextRecognitionProcessor(this,
+              DevanagariTextRecognizerOptions.Builder().build())
           }
           TEXT_RECOGNITION_JAPANESE -> {
-            Log.i(TAG, "Using on-device Text recognition Processor for Latin and Japanese")
-            TextRecognitionProcessor(this, JapaneseTextRecognizerOptions.Builder().build())
+            Log.i(TAG,
+              "Using on-device Text recognition Processor for Latin and Japanese")
+            TextRecognitionProcessor(this,
+              JapaneseTextRecognizerOptions.Builder().build())
           }
           TEXT_RECOGNITION_KOREAN -> {
-            Log.i(TAG, "Using on-device Text recognition Processor for Latin and Korean")
-            TextRecognitionProcessor(this, KoreanTextRecognizerOptions.Builder().build())
+            Log.i(TAG,
+              "Using on-device Text recognition Processor for Latin and Korean")
+            TextRecognitionProcessor(this,
+              KoreanTextRecognizerOptions.Builder().build())
           }
           FACE_DETECTION -> {
             Log.i(TAG, "Using Face Detector Processor")
@@ -315,7 +420,8 @@ class CameraXLivePreviewActivity :
           IMAGE_LABELING_CUSTOM -> {
             Log.i(TAG, "Using Custom Image Label (Birds) Detector Processor")
             val localClassifier =
-              LocalModel.Builder().setAssetFilePath("custom_models/bird_classifier.tflite").build()
+              LocalModel.Builder()
+                .setAssetFilePath("custom_models/bird_classifier.tflite").build()
             val customImageLabelerOptions =
               CustomImageLabelerOptions.Builder(localClassifier).build()
             LabelDetectorProcessor(this, customImageLabelerOptions)
@@ -323,20 +429,25 @@ class CameraXLivePreviewActivity :
           CUSTOM_AUTOML_LABELING -> {
             Log.i(TAG, "Using Custom AutoML Image Label Detector Processor")
             val customAutoMLLabelLocalModel =
-              LocalModel.Builder().setAssetManifestFilePath("automl/manifest.json").build()
+              LocalModel.Builder().setAssetManifestFilePath("automl/manifest.json")
+                .build()
             val customAutoMLLabelOptions =
               CustomImageLabelerOptions.Builder(customAutoMLLabelLocalModel)
                 .setConfidenceThreshold(0f)
                 .build()
             LabelDetectorProcessor(this, customAutoMLLabelOptions)
           }
+          // ! here wt we need
           POSE_DETECTION -> {
-            val poseDetectorOptions = PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
+            val poseDetectorOptions =
+              PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
             val shouldShowInFrameLikelihood =
               PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
             val visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this)
-            val rescaleZ = PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
-            val runClassification = PreferenceUtils.shouldPoseDetectionRunClassification(this)
+            val rescaleZ =
+              PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
+            val runClassification =
+              PreferenceUtils.shouldPoseDetectionRunClassification(this)
             PoseDetectorProcessor(
               this,
               poseDetectorOptions,
@@ -354,10 +465,10 @@ class CameraXLivePreviewActivity :
       } catch (e: Exception) {
         Log.e(TAG, "Can not create image processor: $selectedModel", e)
         Toast.makeText(
-            applicationContext,
-            "Can not create image processor: " + e.localizedMessage,
-            Toast.LENGTH_LONG
-          )
+          applicationContext,
+          "Can not create image processor: " + e.localizedMessage,
+          Toast.LENGTH_LONG
+        )
           .show()
         return
       }

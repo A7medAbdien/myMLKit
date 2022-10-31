@@ -18,6 +18,7 @@ package com.google.mlkit.vision.demo.kotlin.objectdetector
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.demo.GraphicOverlay
@@ -54,6 +55,8 @@ class ObjectDetectorProcessor(context: Context, options: ObjectDetectorOptionsBa
   override fun onSuccess(results: List<DetectedObject>, graphicOverlay: GraphicOverlay) {
     for (result in results) {
       graphicOverlay.add(ObjectGraphic(graphicOverlay, result))
+
+      Log.d("Rect coord",(result.boundingBox.exactCenterX().toInt() to result.boundingBox.exactCenterY().toInt()).toString())
     }
   }
 

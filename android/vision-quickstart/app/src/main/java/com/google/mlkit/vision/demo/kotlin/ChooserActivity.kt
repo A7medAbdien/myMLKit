@@ -55,6 +55,7 @@ class ChooserActivity :
     startActivity(Intent(this, clicked))
   }
 
+  // the rendering the simpleName and description
   private class MyArrayAdapter(
     private val ctx: Context,
     resource: Int,
@@ -70,6 +71,7 @@ class ChooserActivity :
         view = inflater.inflate(android.R.layout.simple_list_item_2, null)
       }
 
+      // set the name of the class being selected
       (view!!.findViewById<View>(android.R.id.text1) as TextView).text =
         classes[position].simpleName
       descriptionIds?.let {
