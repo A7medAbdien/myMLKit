@@ -66,6 +66,7 @@ public class BitmapUtils {
     return null;
   }
 
+  // ! this what we use
   /** Converts a YUV_420_888 image from CameraX API to a bitmap. */
   @RequiresApi(VERSION_CODES.LOLLIPOP)
   @Nullable

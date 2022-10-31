@@ -179,7 +179,7 @@ class CameraXLivePreviewActivity :
      *
      */
     // To Bind CameraX useCases
-    // Creating a ViewModel that can interact with CameraX with live data because it will be observed by ProcessCameraProvider!!
+    // Creating a ViewModel that can interact with CameraX with live data, images/frames, because it will be observed by ProcessCameraProvider!!
     // ! Sets the cameraProvider and bind UseCase of CameraX, show use of CameraX tutorial
     ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application))
       .get(CameraXViewModel::class.java)
@@ -429,7 +429,7 @@ class CameraXLivePreviewActivity :
        * */
       ContextCompat.getMainExecutor(this),
       ImageAnalysis.Analyzer { imageProxy: ImageProxy ->
-        /* ------------------- * Rotation Handling ------------------------------------- */
+        /* -------------------  Rotation Handling ------------------------------------- */
         if (needUpdateGraphicOverlayImageSourceInfo) {
           val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
           val rotationDegrees = imageProxy.imageInfo.rotationDegrees
@@ -440,7 +440,7 @@ class CameraXLivePreviewActivity :
           }
           needUpdateGraphicOverlayImageSourceInfo = false
         }
-        /* ------------------- * Rotation Handling Done ------------------------------- */
+        /* -------------------  Rotation Handling Done ------------------------------- */
 
         try {
           // ! here what is important

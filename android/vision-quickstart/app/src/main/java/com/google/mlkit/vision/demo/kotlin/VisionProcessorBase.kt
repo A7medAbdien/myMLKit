@@ -109,28 +109,28 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
 
   // -----------------Code for processing single still image----------------------------------------
   override fun processBitmap(bitmap: Bitmap?, graphicOverlay: GraphicOverlay) {
-    val frameStartMs = SystemClock.elapsedRealtime()
-
-    if (isMlImageEnabled(graphicOverlay.context)) {
-      val mlImage = BitmapMlImageBuilder(bitmap!!).build()
-      requestDetectInImage(
-        mlImage,
-        graphicOverlay,
-        /* originalCameraImage= */ null,
-        /* shouldShowFps= */ false,
-        frameStartMs
-      )
-      mlImage.close()
-      return
-    }
-
-    requestDetectInImage(
-      InputImage.fromBitmap(bitmap!!, 0),
-      graphicOverlay,
-      /* originalCameraImage= */ null,
-      /* shouldShowFps= */ false,
-      frameStartMs
-    )
+//    val frameStartMs = SystemClock.elapsedRealtime()
+//
+//    if (isMlImageEnabled(graphicOverlay.context)) {
+//      val mlImage = BitmapMlImageBuilder(bitmap!!).build()
+//      requestDetectInImage(
+//        mlImage,
+//        graphicOverlay,
+//        /* originalCameraImage= */ null,
+//        /* shouldShowFps= */ false,
+//        frameStartMs
+//      )
+//      mlImage.close()
+//      return
+//    }
+//
+//    requestDetectInImage(
+//      InputImage.fromBitmap(bitmap!!, 0),
+//      graphicOverlay,
+//      /* originalCameraImage= */ null,
+//      /* shouldShowFps= */ false,
+//      frameStartMs
+//    )
   }
 
   // -----------------Code for processing live preview frame from Camera1 API-----------------------
@@ -139,71 +139,72 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     data: ByteBuffer?,
     frameMetadata: FrameMetadata?,
     graphicOverlay: GraphicOverlay
-  ) {
-    latestImage = data
-    latestImageMetaData = frameMetadata
-    if (processingImage == null && processingMetaData == null) {
-      processLatestImage(graphicOverlay)
-    }
+  )
+  {
+//    latestImage = data
+//    latestImageMetaData = frameMetadata
+//    if (processingImage == null && processingMetaData == null) {
+//      processLatestImage(graphicOverlay)
+//    }
   }
-
-  @Synchronized
-  private fun processLatestImage(graphicOverlay: GraphicOverlay) {
-    processingImage = latestImage
-    processingMetaData = latestImageMetaData
-    latestImage = null
-    latestImageMetaData = null
-    if (processingImage != null && processingMetaData != null && !isShutdown) {
-      processImage(processingImage!!, processingMetaData!!, graphicOverlay)
+  /*
+    @Synchronized
+    private fun processLatestImage(graphicOverlay: GraphicOverlay) {
+      processingImage = latestImage
+      processingMetaData = latestImageMetaData
+      latestImage = null
+      latestImageMetaData = null
+      if (processingImage != null && processingMetaData != null && !isShutdown) {
+        processImage(processingImage!!, processingMetaData!!, graphicOverlay)
+      }
     }
-  }
 
-  private fun processImage(
-    data: ByteBuffer,
-    frameMetadata: FrameMetadata,
-    graphicOverlay: GraphicOverlay
-  ) {
-    val frameStartMs = SystemClock.elapsedRealtime()
-    // If live viewport is on (that is the underneath surface view takes care of the camera preview
-    // drawing), skip the unnecessary bitmap creation that used for the manual preview drawing.
-    val bitmap =
-      if (PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.context)) null
-      else BitmapUtils.getBitmap(data, frameMetadata)
+    private fun processImage(
+      data: ByteBuffer,
+      frameMetadata: FrameMetadata,
+      graphicOverlay: GraphicOverlay
+    ) {
+      val frameStartMs = SystemClock.elapsedRealtime()
+      // If live viewport is on (that is the underneath surface view takes care of the camera preview
+      // drawing), skip the unnecessary bitmap creation that used for the manual preview drawing.
+      val bitmap =
+        if (PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.context)) null
+        else BitmapUtils.getBitmap(data, frameMetadata)
 
-    if (isMlImageEnabled(graphicOverlay.context)) {
-      val mlImage =
-        ByteBufferMlImageBuilder(
-            data,
-            frameMetadata.width,
-            frameMetadata.height,
-            MlImage.IMAGE_FORMAT_NV21
-          )
-          .setRotation(frameMetadata.rotation)
-          .build()
-      requestDetectInImage(mlImage, graphicOverlay, bitmap, /* shouldShowFps= */ true, frameStartMs)
+      if (isMlImageEnabled(graphicOverlay.context)) {
+        val mlImage =
+          ByteBufferMlImageBuilder(
+              data,
+              frameMetadata.width,
+              frameMetadata.height,
+              MlImage.IMAGE_FORMAT_NV21
+            )
+            .setRotation(frameMetadata.rotation)
+            .build()
+        requestDetectInImage(mlImage, graphicOverlay, bitmap, /* shouldShowFps= */ true, frameStartMs)
+          .addOnSuccessListener(executor) { processLatestImage(graphicOverlay) }
+
+        // This is optional. Java Garbage collection can also close it eventually.
+        mlImage.close()
+        return
+      }
+
+      requestDetectInImage(
+        InputImage.fromByteBuffer(
+          data,
+          frameMetadata.width,
+          frameMetadata.height,
+          frameMetadata.rotation,
+          InputImage.IMAGE_FORMAT_NV21
+        ),
+        graphicOverlay,
+        bitmap,
+        /* shouldShowFps= */ true,
+        frameStartMs
+      )
         .addOnSuccessListener(executor) { processLatestImage(graphicOverlay) }
-
-      // This is optional. Java Garbage collection can also close it eventually.
-      mlImage.close()
-      return
     }
-
-    requestDetectInImage(
-      InputImage.fromByteBuffer(
-        data,
-        frameMetadata.width,
-        frameMetadata.height,
-        frameMetadata.rotation,
-        InputImage.IMAGE_FORMAT_NV21
-      ),
-      graphicOverlay,
-      bitmap,
-      /* shouldShowFps= */ true,
-      frameStartMs
-    )
-      .addOnSuccessListener(executor) { processLatestImage(graphicOverlay) }
-  }
-
+  */
   // -----------------Code for processing live preview frame from CameraX API-----------------------
   @RequiresApi(VERSION_CODES.LOLLIPOP)
   @ExperimentalGetImage
@@ -338,10 +339,15 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
             Log.d(TAG, "Memory available in system: $availableMegs MB")
           }
           graphicOverlay.clear()
+          // this draws the whole scene
           if (originalCameraImage != null) {
             graphicOverlay.add(CameraImageGraphic(graphicOverlay, originalCameraImage))
           }
+
+          // ! this is what we need
           this@VisionProcessorBase.onSuccess(results, graphicOverlay)
+
+          // this render the FPS and those stuff
           if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.context)) {
             graphicOverlay.add(
               InferenceInfoGraphic(
@@ -352,6 +358,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
               )
             )
           }
+
           graphicOverlay.postInvalidate()
         }
       )
