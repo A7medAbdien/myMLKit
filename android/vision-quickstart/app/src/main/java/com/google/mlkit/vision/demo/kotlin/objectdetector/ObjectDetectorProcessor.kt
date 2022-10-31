@@ -52,11 +52,18 @@ class ObjectDetectorProcessor(context: Context, options: ObjectDetectorOptionsBa
     return detector.process(image)
   }
 
+  override fun onSuccess(results: List<DetectedObject>) {
+    for (result in results) {
+//      graphicOverlay.add(ObjectGraphic(graphicOverlay, result))
+      // ! me ^^
+      Log.d("Rect coord",(result.boundingBox.exactCenterX().toInt() to result.boundingBox.exactCenterY().toInt()).toString())
+    }
+  }
   override fun onSuccess(results: List<DetectedObject>, graphicOverlay: GraphicOverlay) {
     for (result in results) {
       graphicOverlay.add(ObjectGraphic(graphicOverlay, result))
       // ! me ^^
-      Log.d("Rect coord",(result.boundingBox.exactCenterX().toInt() to result.boundingBox.exactCenterY().toInt()).toString())
+//      Log.d("Rect coord",(result.boundingBox.exactCenterX().toInt() to result.boundingBox.exactCenterY().toInt()).toString())
     }
   }
 

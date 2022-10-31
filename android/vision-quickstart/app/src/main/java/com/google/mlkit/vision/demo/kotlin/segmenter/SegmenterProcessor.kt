@@ -59,6 +59,7 @@ class SegmenterProcessor :
     return segmenter.process(image)
   }
 
+  override fun onSuccess(segmentationMask: SegmentationMask,){}
   override fun onSuccess(
     segmentationMask: SegmentationMask,
     graphicOverlay: GraphicOverlay

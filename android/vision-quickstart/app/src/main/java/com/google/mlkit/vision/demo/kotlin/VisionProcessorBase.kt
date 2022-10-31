@@ -345,7 +345,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
           }
 
           // ! this is what we need
-          this@VisionProcessorBase.onSuccess(results, graphicOverlay)
+          this@VisionProcessorBase.onSuccess(results)
 
           // this render the FPS and those stuff
           if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.context)) {
@@ -413,6 +413,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
   }
 
   protected abstract fun onSuccess(results: T, graphicOverlay: GraphicOverlay)
+  protected abstract fun onSuccess(results: T)
 
   protected abstract fun onFailure(e: Exception)
 
