@@ -100,7 +100,7 @@ class CameraXLivePreviewActivity :
     // that will select our camera
     cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
-    //----------- xml connections -----------
+    // ! -------------------------------- xml connections ----------------------------------
     setContentView(R.layout.activity_vision_camerax_live_preview)
     previewView = findViewById(R.id.preview_view)
     if (previewView == null) {
@@ -135,7 +135,7 @@ class CameraXLivePreviewActivity :
       intent.putExtra(SettingsActivity.EXTRA_LAUNCH_SOURCE, LaunchSource.CAMERAX_LIVE_PREVIEW)
       startActivity(intent)
     }
-    //--------------------------------- xml connections done ---------------------------------------
+    // ! --------------------------------- xml connections done --------------------------------
 
     /**
      * ViewModel
@@ -195,7 +195,7 @@ class CameraXLivePreviewActivity :
 
   }
 
-  // ---------------------- handel Adaptor -----------------------------------------
+  // ! ---------------------- handel Adaptor -----------------------------------------
   // when the selected model change
   override fun onSaveInstanceState(bundle: Bundle) {
     super.onSaveInstanceState(bundle)
@@ -215,7 +215,7 @@ class CameraXLivePreviewActivity :
   override fun onNothingSelected(parent: AdapterView<*>?) {
     // Do nothing.
   }
-  // ---------------------- handel Adaptor -----------------------------------------
+  // ! ---------------------- handel Adaptor -----------------------------------------
 
   // when cam changes
   // * in case of changing the cam/Lens, rebind all cases
@@ -340,6 +340,7 @@ class CameraXLivePreviewActivity :
      *
      *  * so our imageProcessor will be instance of ObjectDetectorProcessor or PoseDetectorProcessor
      *  */
+    // ! ----------------------------------- imageProcessor ----------------------------------------
     imageProcessor =
       try {
         when (selectedModel) {
@@ -347,7 +348,7 @@ class CameraXLivePreviewActivity :
             Log.i(TAG, "Using Object Detector Processor")
             val objectDetectorOptions =
               PreferenceUtils.getObjectDetectorOptionsForLivePreview(this)
-            /* ! this is what will be assign to imageProcessor */
+            // ! ------------------------- imageProcessor Creation -------------------------
             ObjectDetectorProcessor(this, objectDetectorOptions)
           }
           OBJECT_DETECTION_CUSTOM -> {
@@ -372,7 +373,6 @@ class CameraXLivePreviewActivity :
               )
             ObjectDetectorProcessor(this, customAutoMLODTOptions)
           }
-          // ! here wt we need
           POSE_DETECTION -> {
             val poseDetectorOptions =
               PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
@@ -406,7 +406,7 @@ class CameraXLivePreviewActivity :
         return
       }
 
-    // ! Use Case Builder
+    // ! ----------------------------- Use Case Builder -----------------------------
     val builder = ImageAnalysis.Builder()
     val targetResolution = PreferenceUtils.getCameraXTargetResolution(this, lensFacing)
     if (targetResolution != null) {
@@ -429,7 +429,7 @@ class CameraXLivePreviewActivity :
        * */
       ContextCompat.getMainExecutor(this),
       ImageAnalysis.Analyzer { imageProxy: ImageProxy ->
-        /* -------------------  Rotation Handling ------------------------------------- */
+        /* ! -------------------  Rotation Handling ------------------------------------- */
         if (needUpdateGraphicOverlayImageSourceInfo) {
           val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
           val rotationDegrees = imageProxy.imageInfo.rotationDegrees
@@ -440,10 +440,10 @@ class CameraXLivePreviewActivity :
           }
           needUpdateGraphicOverlayImageSourceInfo = false
         }
-        /* -------------------  Rotation Handling Done ------------------------------- */
+        /* ! -------------------  Rotation Handling Done ------------------------------- */
 
         try {
-          // ! here what is important
+          // ! ------------------------------------ processImageProxy ------------------------------------
           imageProcessor!!.processImageProxy(imageProxy, graphicOverlay)
 
         } catch (e: MlKitException) {

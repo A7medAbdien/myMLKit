@@ -44,6 +44,7 @@ class ChooserActivity :
 
     // Set up ListView and Adapter
     val listView = findViewById<ListView>(R.id.test_activity_list_view)
+    // ! it will get instance of our created class, CLASSES is what contain next Step
     val adapter = MyArrayAdapter(this, android.R.layout.simple_list_item_2, CLASSES)
     adapter.setDescriptionIds(DESCRIPTION_IDS)
     listView.adapter = adapter

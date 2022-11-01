@@ -63,7 +63,10 @@ class ObjectDetectorProcessor(context: Context, options: ObjectDetectorOptionsBa
     for (result in results) {
       graphicOverlay.add(ObjectGraphic(graphicOverlay, result))
       // ! me ^^
-//      Log.d("Rect coord",(result.boundingBox.exactCenterX().toInt() to result.boundingBox.exactCenterY().toInt()).toString())
+//      var s = "none"
+//      if (result.labels.size>0) s = result.labels[0]!!.text
+      val msg: String = result.trackingId.toString() + " / "+ (result.boundingBox.exactCenterX().toInt() to result.boundingBox.exactCenterY().toInt()).toString()
+      Log.d("Rect coord",msg)
     }
   }
 

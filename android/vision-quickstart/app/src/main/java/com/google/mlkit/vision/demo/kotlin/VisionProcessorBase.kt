@@ -205,7 +205,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
         .addOnSuccessListener(executor) { processLatestImage(graphicOverlay) }
     }
   */
-  // -----------------Code for processing live preview frame from CameraX API-----------------------
+  // ! -----------------Code for processing live preview frame from CameraX API-----------------------
   @RequiresApi(VERSION_CODES.LOLLIPOP)
   @ExperimentalGetImage
   override fun processImageProxy(image: ImageProxy, graphicOverlay: GraphicOverlay) {
@@ -213,10 +213,11 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     if (isShutdown) {
       return
     }
-    var bitmap: Bitmap? = null
-    if (!PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.context)) {
-      bitmap = BitmapUtils.getBitmap(image)
-    }
+//    var bitmap: Bitmap? = null
+//    if (!PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.context)) {
+//      bitmap = BitmapUtils.getBitmap(image)
+//    }
+    val  bitmap = BitmapUtils.getBitmap(image)
 
     if (isMlImageEnabled(graphicOverlay.context)) {
       val mlImage =
@@ -239,7 +240,9 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     }
 
     requestDetectInImage(
-      InputImage.fromMediaImage(image.image!!, image.imageInfo.rotationDegrees),
+//      InputImage.fromMediaImage(image.image!!, image.imageInfo.rotationDegrees),
+//      InputImage.fromBitmap(bitmap!!,image.imageInfo.rotationDegrees), places boxes in wrong place
+      InputImage.fromBitmap(bitmap!!,0),
       graphicOverlay,
       /* originalCameraImage= */ bitmap,
       /* shouldShowFps= */ true,
@@ -252,6 +255,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
   }
 
   // -----------------Common processing logic-------------------------------------------------------
+  // ! --------------------------------------- InputImage.fromMediaImage passed here ------------
   private fun requestDetectInImage(
     image: InputImage,
     graphicOverlay: GraphicOverlay,
@@ -284,6 +288,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     )
   }
 
+  // ! Detection Listener
   private fun setUpListener(
     task: Task<T>,
     graphicOverlay: GraphicOverlay,
@@ -344,8 +349,9 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
             graphicOverlay.add(CameraImageGraphic(graphicOverlay, originalCameraImage))
           }
 
-          // ! this is what we need
-          this@VisionProcessorBase.onSuccess(results)
+          // ! ------------------------------------------- Rendering the box -------------------
+//          this@VisionProcessorBase.onSuccess(results)
+          this@VisionProcessorBase.onSuccess(results,graphicOverlay)
 
           // this render the FPS and those stuff
           if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.context)) {
