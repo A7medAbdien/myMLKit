@@ -123,50 +123,10 @@ class CameraXLivePreviewActivity :
     }
     // ! --------------------------------- xml connections done --------------------------------
 
-    /**
-     * ViewModel
-     * is a class that is responsible for preparing and managing the data for an Activity or a Fragment.
-     * It also handles the communication of the Activity / Fragment with the rest of the application
-     * (e.g. calling the business logic classes).
-     *
-     * ViewModelProvider
-     * A utility class that provides ViewModels for a scope.
-     *
-     * ViewModelProvider.Factory which may create AndroidViewModel and ViewModel, which have an empty constructor.
-     *
-     * getInstance:
-     * Retrieve a singleton instance of AndroidViewModelFactory.
-     *
-     * @param application an application to pass in {@link AndroidViewModel}
-     * @return A valid {@link AndroidViewModelFactory}
-     *
-     * get:
-     * Returns an existing ViewModel or creates a new one in the scope (usually, a fragment or an activity),
-     * associated with this ViewModelProvider.
-     *
-     * CameraXViewModel:
-     * View model for interacting with CameraX.
-     *
-     * processCameraProvider:
-     * Create an instance which interacts with the camera service via the given application context.
-     *
-     * LiveData:
-     * LiveData is a data holder class that can be observed within a given lifecycle.
-     *
-     * observe:
-     * Adds the given observer to the observers list within the lifespan of the given owner.
-     * @param owner    The LifecycleOwner which controls the observer
-     * @param observer The observer that will receive the events
-     *
-     * ProcessCameraProvider:
-     * A singleton which can be used to bind the lifecycle of cameras to any LifecycleOwner within an application's process.
-     *
-     * The Singleton Pattern is a software design pattern that restricts the instantiation of a class to just “one” instance.
-     *
-     */
     // To Bind CameraX useCases
-    // Creating a ViewModel that can interact with CameraX with live data, images/frames, because it will be observed by ProcessCameraProvider!!
-    // ! Sets the cameraProvider and bind UseCase of CameraX, show use of CameraX tutorial
+    // Creating a ViewModel that can interact with CameraX with live data, images/frames,
+    // because it will be observed by ProcessCameraProvider!!
+    // * Sets the cameraProvider and bind UseCase of CameraX, show use of CameraX tutorial
     ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application))
       .get(CameraXViewModel::class.java)
       .processCameraProvider
@@ -177,34 +137,9 @@ class CameraXLivePreviewActivity :
           bindAllCameraUseCases()
         }
       )
-
-
   }
 
-  // ! ---------------------- handel Adaptor -----------------------------------------
-  // when the selected model change
-//  override fun onSaveInstanceState(bundle: Bundle) {
-//    super.onSaveInstanceState(bundle)
-//    bundle.putString(STATE_SELECTED_MODEL, selectedModel)
-//  }
-
-//  @Synchronized
-//  override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-//    // An item was selected. You can retrieve the selected item using
-//    // parent.getItemAtPosition(pos)
-//    selectedModel = parent?.getItemAtPosition(pos).toString()
-//    Log.d(TAG, "Selected model: $selectedModel")
-//    // * he rebind the AnalysisUseCase, cus the adaptor will effect only the type of analysis
-//    bindAnalysisUseCase()
-//  }
-//
-//  override fun onNothingSelected(parent: AdapterView<*>?) {
-//    // Do nothing.
-//  }
-  // ! ---------------------- handel Adaptor -----------------------------------------
-
-  // when cam changes
-  // * in case of changing the cam/Lens, rebind all cases
+  // ! ---------------------- changing the cam/Lens, rebind all cases ---------------------------
   override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
     if (cameraProvider == null) {
       return
@@ -234,6 +169,7 @@ class CameraXLivePreviewActivity :
     )
       .show()
   }
+  // ! --------------------------- changing the cam/Lens, rebind all cases -------------------------
 
   public override fun onResume() {
     super.onResume()
@@ -242,7 +178,6 @@ class CameraXLivePreviewActivity :
 
   override fun onPause() {
     super.onPause()
-
     imageProcessor?.run { this.stop() }
   }
 
@@ -260,8 +195,6 @@ class CameraXLivePreviewActivity :
     }
   }
 
-  // here the preview is known and previewUseCase is known and they will be bind with cameraProvider
-  // to receive the camera data
   // * preview Use case
   private fun bindPreviewUseCase() {
     if (!PreferenceUtils.isCameraLiveViewportEnabled(this)) {
@@ -305,7 +238,6 @@ class CameraXLivePreviewActivity :
       previewUseCase)
   }
 
-  // the cameraProvider is known, previewUseCase and previewProvider are UnKnown
   // * Analysis use case
   private fun bindAnalysisUseCase() {
     if (cameraProvider == null) {
@@ -318,13 +250,8 @@ class CameraXLivePreviewActivity :
       imageProcessor!!.stop()
     }
     /**
-     *  ! all object detectors, first three cases, pass is Processor Builder and its Options to
-     *  @return ObjectDetectorProcessor
-     *
-     *  ? Notice that PreferenceUtils is used to get the Options of the the processor
-     *  PreferenceUtils: Utility class to retrieve shared preferences
-     *
-     *  * so our imageProcessor will be instance of ObjectDetectorProcessor or PoseDetectorProcessor
+     *  ? Notice that PreferenceUtils is used to get the Options of the the processor,
+     *  PreferenceUtils: Utility class to retrieve shared preferences.
      */
     // ! ----------------------------------- imageProcessor ----------------------------------------
     imageProcessor =
@@ -368,9 +295,9 @@ class CameraXLivePreviewActivity :
     needUpdateGraphicOverlayImageSourceInfo = true
 
     /**
-     * @param Executor
-     * @param Analyzer of the image
-     */
+    * @param Executor .
+    * @param Analyzer of the image.
+    */
     analysisUseCase?.setAnalyzer(
       // imageProcessor.processImageProxy will use another thread to run the detection underneath,
       // thus we can just runs the analyzer itself on main thread.
@@ -395,7 +322,7 @@ class CameraXLivePreviewActivity :
         /* ! -------------------  Rotation Handling Done ------------------------------- */
 
         try {
-          // ! ------------------------------------ processImageProxy ------------------------------------
+          // ! -------------------------- processImageProxy ---------------------
           imageProcessor!!.processImageProxy(imageProxy, graphicOverlay)
 
         } catch (e: MlKitException) {
