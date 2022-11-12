@@ -19,6 +19,7 @@ package com.google.mlkit.vision.demo.kotlin.posedetector
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.util.Log
 import com.google.mlkit.vision.demo.GraphicOverlay
 import com.google.mlkit.vision.demo.GraphicOverlay.Graphic
 import com.google.mlkit.vision.pose.Pose
@@ -26,6 +27,8 @@ import com.google.mlkit.vision.pose.PoseLandmark
 import java.lang.Math.max
 import java.lang.Math.min
 import java.util.Locale
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /** Draw the detected pose in preview. */
 class PoseGraphic
@@ -63,59 +66,82 @@ internal constructor(
   }
 
   override fun draw(canvas: Canvas) {
+
     val landmarks = pose.allPoseLandmarks
     if (landmarks.isEmpty()) {
       return
     }
 
-    // Draw pose classification text.
-    val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * 0.5f
-    for (i in poseClassification.indices) {
-      val classificationY =
-        canvas.height -
-            (POSE_CLASSIFICATION_TEXT_SIZE * 1.5f * (poseClassification.size - i).toFloat())
-      canvas.drawText(
-        poseClassification[i],
-        classificationX,
-        classificationY,
-        classificationTextPaint
-      )
-    }
+    val nose = pose.getPoseLandmark(PoseLandmark.NOSE)
+    val rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
+    val leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
+    val rightHip = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)
+    val leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP)
+
+    val landmarksSub: List<PoseLandmark?> =
+      listOf<PoseLandmark?>(nose, rightShoulder, leftShoulder, rightHip, leftHip);
+
+//    // Draw pose classification text.
+//    val classificationX = POSE_CLASSIFICATION_TEXT_SIZE * 0.5f
+//    for (i in poseClassification.indices) {
+//      val classificationY =
+//        canvas.height -
+//            (POSE_CLASSIFICATION_TEXT_SIZE * 1.5f * (poseClassification.size - i).toFloat())
+//      canvas.drawText(
+//        poseClassification[i],
+//        classificationX,
+//        classificationY,
+//        classificationTextPaint
+//      )
+//    }
 
     // Draw all the points
-    for (landmark in landmarks) {
-      drawPoint(canvas, landmark, whitePaint)
+    for (landmark in landmarksSub) {
+      drawPoint(canvas, landmark!!, whitePaint)
       if (visualizeZ && rescaleZForVisualization) {
         zMin = min(zMin, landmark.position3D.z)
         zMax = max(zMax, landmark.position3D.z)
       }
+//      Log.i("test", (landmark.position3D).toString());
     }
 
-    val nose = pose.getPoseLandmark(PoseLandmark.NOSE)
-    val leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
-    val rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
-    val leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP)
-    val rightHip = pose.getPoseLandmark(PoseLandmark.RIGHT_HIP)
 
     drawLine(canvas, leftShoulder, rightShoulder, whitePaint)
     drawLine(canvas, leftHip, rightHip, whitePaint)
 
     // Left body
     drawLine(canvas, leftShoulder, leftHip, leftPaint)
+    val leftSide = calculateDistance(leftShoulder!!, leftHip!!)
 
     // Right body
     drawLine(canvas, rightShoulder, rightHip, rightPaint)
+    val rightSide = calculateDistance(rightShoulder!!, rightHip!!)
+
+    val avgDistance = (rightSide - leftSide) / 2
 
 
     // ! ------------------------------------- Draw inFrameLikelihood for all points
     if (showInFrameLikelihood) {
       canvas.drawText(
-        "wowwwwwwwwwwwwwwww",
+        avgDistance.toString(),
         translateX(nose!!.position.x),
         translateY(nose.position.y),
         whitePaint
       )
+      Log.d("Distance: ", avgDistance.toString())
     }
+  }
+
+  private fun calculateDistance(x: Float, y: Float, z: Float): Float {
+    return sqrt(x.pow(2) + y.pow(2) + z.pow(2))
+  }
+
+  private fun calculateDistance(objectPose0: PoseLandmark, objectPose1: PoseLandmark): Float {
+    return calculateDistance(
+      objectPose0.position3D.x - objectPose1.position3D.x,
+      objectPose0.position3D.y - objectPose1.position3D.y,
+      (objectPose0.position3D.z - objectPose1.position3D.z) * .5f
+    )
   }
 
   internal fun drawPoint(canvas: Canvas, landmark: PoseLandmark, paint: Paint) {

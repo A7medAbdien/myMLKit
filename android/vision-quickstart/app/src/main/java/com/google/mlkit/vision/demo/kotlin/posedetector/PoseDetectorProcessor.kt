@@ -104,7 +104,7 @@ class PoseDetectorProcessor(
   }
 
   override fun onSuccess(results: PoseWithClassification){
-    Log.i("test", (results.pose.getPoseLandmark(0)?.position3D).toString());
+//    Log.i("test", (results.pose.getPoseLandmark(0)?.position3D).toString());
   }
   override fun onSuccess(
     results: PoseWithClassification,
@@ -120,7 +120,7 @@ class PoseDetectorProcessor(
         results.classificationResult
       )
     )
-    Log.i("test", (results.pose.getPoseLandmark(0)?.position3D).toString());
+//    Log.i("test", (results.pose.getPoseLandmark(0)?.position3D).toString());
   }
 
   override fun onFailure(e: Exception) {
