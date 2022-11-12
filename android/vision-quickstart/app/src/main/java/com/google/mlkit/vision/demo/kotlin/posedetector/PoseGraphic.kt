@@ -103,7 +103,7 @@ internal constructor(
     drawLine(canvas, rightShoulder, rightHip, rightPaint)
     val rightSide = calculateDistance(rightShoulder!!, rightHip!!)
 
-    val avgDistance = (rightSide - leftSide) / 2
+    val avgDistance = (rightSide + leftSide) / 2
 
 
     // ! ------------------------------------- Draw on nose -------------------------------------
