@@ -349,7 +349,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
             graphicOverlay.add(CameraImageGraphic(graphicOverlay, originalCameraImage))
           }
 
-          // ! ------------------------------------------- Rendering the box -------------------
+          // ! ---------------------------------- Rendering the result ----------------------------
 //          this@VisionProcessorBase.onSuccess(results)
           this@VisionProcessorBase.onSuccess(results,graphicOverlay)
 
