@@ -20,28 +20,35 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.mlkit.vision.demo.kotlin.CameraXLivePreviewActivity
 import java.util.ArrayList
 
 class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
 
+  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_vision_entry_choice)
-    val intent =
-      Intent(
-        this@EntryChoiceActivity,
-        com.google.mlkit.vision.demo.kotlin.ChooserActivity::class.java
-      )
-    startActivity(intent)
+//    findViewById<TextView>(R.id.kotlin_entry_point).setOnClickListener {
+//      val intent =
+//        Intent(
+//          this@EntryChoiceActivity,
+//          com.google.mlkit.vision.demo.kotlin.ChooserActivity::class.java
+//        )
+//      startActivity(intent)
+//    }
 
     if (!allRuntimePermissionsGranted()) {
       getRuntimePermissions()
     }
+    startActivity(Intent(this, CameraXLivePreviewActivity::class.java))
   }
 
   private fun allRuntimePermissionsGranted(): Boolean {
