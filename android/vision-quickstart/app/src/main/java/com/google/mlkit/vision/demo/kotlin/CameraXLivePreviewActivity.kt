@@ -84,7 +84,7 @@ class CameraXLivePreviewActivity :
   // An interface to process the images with different vision detectors and custom image models.
   private var imageProcessor: VisionImageProcessor? = null
   private var needUpdateGraphicOverlayImageSourceInfo = false
-  private var selectedModel = OBJECT_DETECTION
+  private var selectedModel = POSE_DETECTION
 
   // CameraSelector: A set of requirements and priorities used to select a camera or return a filtered set of cameras.
   private var lensFacing = CameraSelector.LENS_FACING_BACK
@@ -112,11 +112,11 @@ class CameraXLivePreviewActivity :
     }
     val spinner = findViewById<Spinner>(R.id.spinner)
     val options: MutableList<String> = ArrayList()
-    options.add(OBJECT_DETECTION)
-    options.add(OBJECT_DETECTION_CUSTOM)
-    options.add(CUSTOM_AUTOML_OBJECT_DETECTION)
+//    options.add(OBJECT_DETECTION)
+//    options.add(OBJECT_DETECTION_CUSTOM)
+//    options.add(CUSTOM_AUTOML_OBJECT_DETECTION)
     options.add(POSE_DETECTION)
-    options.add(SELFIE_SEGMENTATION)
+//    options.add(SELFIE_SEGMENTATION)
 
     // Creating adapter for spinner
     val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, options)
@@ -339,63 +339,28 @@ class CameraXLivePreviewActivity :
      *  PreferenceUtils: Utility class to retrieve shared preferences
      *
      *  * so our imageProcessor will be instance of ObjectDetectorProcessor or PoseDetectorProcessor
-     *  */
+     */
     // ! ----------------------------------- imageProcessor ----------------------------------------
     imageProcessor =
       try {
-        when (selectedModel) {
-          OBJECT_DETECTION -> {
-            Log.i(TAG, "Using Object Detector Processor")
-            val objectDetectorOptions =
-              PreferenceUtils.getObjectDetectorOptionsForLivePreview(this)
-            // ! ------------------------- imageProcessor Creation -------------------------
-            ObjectDetectorProcessor(this, objectDetectorOptions)
-          }
-          OBJECT_DETECTION_CUSTOM -> {
-            Log.i(TAG, "Using Custom Object Detector (with object labeler) Processor")
-            val localModel =
-              LocalModel.Builder()
-                .setAssetFilePath("custom_models/object_labeler.tflite").build()
-            val customObjectDetectorOptions =
-              PreferenceUtils.getCustomObjectDetectorOptionsForLivePreview(this,
-                localModel)
-            ObjectDetectorProcessor(this, customObjectDetectorOptions)
-          }
-          CUSTOM_AUTOML_OBJECT_DETECTION -> {
-            Log.i(TAG, "Using Custom AutoML Object Detector Processor")
-            val customAutoMLODTLocalModel =
-              LocalModel.Builder().setAssetManifestFilePath("automl/manifest.json")
-                .build()
-            val customAutoMLODTOptions =
-              PreferenceUtils.getCustomObjectDetectorOptionsForLivePreview(
-                this,
-                customAutoMLODTLocalModel
-              )
-            ObjectDetectorProcessor(this, customAutoMLODTOptions)
-          }
-          POSE_DETECTION -> {
-            val poseDetectorOptions =
-              PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
-            val shouldShowInFrameLikelihood =
-              PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
-            val visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this)
-            val rescaleZ =
-              PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
-            val runClassification =
-              PreferenceUtils.shouldPoseDetectionRunClassification(this)
-            PoseDetectorProcessor(
-              this,
-              poseDetectorOptions,
-              shouldShowInFrameLikelihood,
-              visualizeZ,
-              rescaleZ,
-              runClassification,
-              /* isStreamMode = */ true
-            )
-          }
-          SELFIE_SEGMENTATION -> SegmenterProcessor(this)
-          else -> throw IllegalStateException("Invalid model name")
-        }
+        val poseDetectorOptions =
+          PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
+        val shouldShowInFrameLikelihood =
+          PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
+        val visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this)
+        val rescaleZ =
+          PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
+        val runClassification =
+          PreferenceUtils.shouldPoseDetectionRunClassification(this)
+        PoseDetectorProcessor(
+          this,
+          poseDetectorOptions,
+          shouldShowInFrameLikelihood,
+          visualizeZ,
+          rescaleZ,
+          runClassification,
+          /* isStreamMode = */ true
+        )
       } catch (e: Exception) {
         Log.e(TAG, "Can not create image processor: $selectedModel", e)
         Toast.makeText(
@@ -418,7 +383,8 @@ class CameraXLivePreviewActivity :
 
     /**
      * @param Executor
-     * @param Analyzer of the image */
+     * @param Analyzer of the image
+     */
     analysisUseCase?.setAnalyzer(
       // imageProcessor.processImageProxy will use another thread to run the detection underneath,
       // thus we can just runs the analyzer itself on main thread.
