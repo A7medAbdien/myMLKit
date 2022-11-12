@@ -112,11 +112,7 @@ class CameraXLivePreviewActivity :
     }
     val spinner = findViewById<Spinner>(R.id.spinner)
     val options: MutableList<String> = ArrayList()
-//    options.add(OBJECT_DETECTION)
-//    options.add(OBJECT_DETECTION_CUSTOM)
-//    options.add(CUSTOM_AUTOML_OBJECT_DETECTION)
     options.add(POSE_DETECTION)
-//    options.add(SELFIE_SEGMENTATION)
 
     // Creating adapter for spinner
     val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, options)
@@ -424,10 +420,7 @@ class CameraXLivePreviewActivity :
   companion object {
     private const val TAG = "CameraXLivePreview"
     private const val OBJECT_DETECTION = "Object Detection"
-    private const val OBJECT_DETECTION_CUSTOM = "Custom Object Detection"
-    private const val CUSTOM_AUTOML_OBJECT_DETECTION = "Custom AutoML Object Detection (Flower)"
     private const val POSE_DETECTION = "Pose Detection"
-    private const val SELFIE_SEGMENTATION = "Selfie Segmentation"
 
     private const val STATE_SELECTED_MODEL = "selected_model"
   }
