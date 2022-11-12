@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.google.mlkit.vision.demo.java.posedetector.classification;
+package com.google.mlkit.vision.demo.kotlin.posedetector.classification;
 
-import static com.google.mlkit.vision.demo.java.posedetector.classification.PoseEmbedding.getPoseEmbedding;
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.maxAbs;
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.multiply;
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.multiplyAll;
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.subtract;
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.sumAbs;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.PoseEmbedding.getPoseEmbedding;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.maxAbs;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.multiply;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.multiplyAll;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.subtract;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.sumAbs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 

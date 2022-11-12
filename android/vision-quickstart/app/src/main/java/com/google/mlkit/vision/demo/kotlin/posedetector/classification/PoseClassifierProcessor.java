@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.mlkit.vision.demo.java.posedetector.classification;
+package com.google.mlkit.vision.demo.kotlin.posedetector.classification;
 
 import android.content.Context;
 import android.media.AudioManager;

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.google.mlkit.vision.demo.java.posedetector.classification;
+package com.google.mlkit.vision.demo.kotlin.posedetector.classification;
 
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.average;
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.l2Norm2D;
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.multiplyAll;
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.subtract;
-import static com.google.mlkit.vision.demo.java.posedetector.classification.Utils.subtractAll;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.average;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.l2Norm2D;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.multiplyAll;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.subtract;
+import static com.google.mlkit.vision.demo.kotlin.posedetector.classification.Utils.subtractAll;
 
 import com.google.mlkit.vision.common.PointF3D;
 import com.google.mlkit.vision.pose.PoseLandmark;
