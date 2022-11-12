@@ -79,7 +79,7 @@ internal constructor(
     val leftHip = pose.getPoseLandmark(PoseLandmark.LEFT_HIP)
 
     val landmarksSub: List<PoseLandmark?> =
-      listOf<PoseLandmark?>(nose, rightShoulder, leftShoulder, rightHip, leftHip);
+      listOf(nose, rightShoulder, leftShoulder, rightHip, leftHip)
 
 
     // Draw all the points
@@ -89,9 +89,8 @@ internal constructor(
         zMin = min(zMin, landmark.position3D.z)
         zMax = max(zMax, landmark.position3D.z)
       }
-//      Log.i("test", (landmark.position3D).toString());
+      // Log.i("test", (landmark.position3D).toString());
     }
-
 
     drawLine(canvas, leftShoulder, rightShoulder, whitePaint)
     drawLine(canvas, leftHip, rightHip, whitePaint)
@@ -107,7 +106,7 @@ internal constructor(
     val avgDistance = (rightSide - leftSide) / 2
 
 
-    // ! ------------------------------------- Draw inFrameLikelihood for all points
+    // ! ------------------------------------- Draw on nose -------------------------------------
     if (showInFrameLikelihood) {
       canvas.drawText(
         avgDistance.toString(),
@@ -118,6 +117,8 @@ internal constructor(
       Log.d("Distance: ", avgDistance.toString())
     }
   }
+
+  // ! ------------------------------------- private use -----------------------------------------
 
   private fun calculateDistance(x: Float, y: Float, z: Float): Float {
     return sqrt(x.pow(2) + y.pow(2) + z.pow(2))
