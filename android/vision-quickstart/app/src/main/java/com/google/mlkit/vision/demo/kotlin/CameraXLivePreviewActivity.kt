@@ -60,7 +60,7 @@ import java.util.ArrayList
 @KeepName
 @RequiresApi(VERSION_CODES.LOLLIPOP)
 class CameraXLivePreviewActivity :
-  AppCompatActivity(), OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
+  AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
   // Custom View that displays the camera feed for CameraX's Preview use case.
   // This class manages the Surface lifecycle, as well as the preview aspect ratio and orientation.
   // ! Internally, it uses either a TextureView or SurfaceView to display the camera feed.
@@ -110,17 +110,7 @@ class CameraXLivePreviewActivity :
     if (graphicOverlay == null) {
       Log.d(TAG, "graphicOverlay is null")
     }
-    val spinner = findViewById<Spinner>(R.id.spinner)
-    val options: MutableList<String> = ArrayList()
-    options.add(POSE_DETECTION)
 
-    // Creating adapter for spinner
-    val dataAdapter = ArrayAdapter(this, R.layout.spinner_style, options)
-    // Drop down layout style - list view with radio button
-    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-    // attaching data adapter to spinner
-    spinner.adapter = dataAdapter
-    spinner.onItemSelectedListener = this
     // cam switching
     val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
     facingSwitch.setOnCheckedChangeListener(this)
@@ -193,24 +183,24 @@ class CameraXLivePreviewActivity :
 
   // ! ---------------------- handel Adaptor -----------------------------------------
   // when the selected model change
-  override fun onSaveInstanceState(bundle: Bundle) {
-    super.onSaveInstanceState(bundle)
-    bundle.putString(STATE_SELECTED_MODEL, selectedModel)
-  }
+//  override fun onSaveInstanceState(bundle: Bundle) {
+//    super.onSaveInstanceState(bundle)
+//    bundle.putString(STATE_SELECTED_MODEL, selectedModel)
+//  }
 
-  @Synchronized
-  override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-    // An item was selected. You can retrieve the selected item using
-    // parent.getItemAtPosition(pos)
-    selectedModel = parent?.getItemAtPosition(pos).toString()
-    Log.d(TAG, "Selected model: $selectedModel")
-    // * he rebind the AnalysisUseCase, cus the adaptor will effect only the type of analysis
-    bindAnalysisUseCase()
-  }
-
-  override fun onNothingSelected(parent: AdapterView<*>?) {
-    // Do nothing.
-  }
+//  @Synchronized
+//  override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+//    // An item was selected. You can retrieve the selected item using
+//    // parent.getItemAtPosition(pos)
+//    selectedModel = parent?.getItemAtPosition(pos).toString()
+//    Log.d(TAG, "Selected model: $selectedModel")
+//    // * he rebind the AnalysisUseCase, cus the adaptor will effect only the type of analysis
+//    bindAnalysisUseCase()
+//  }
+//
+//  override fun onNothingSelected(parent: AdapterView<*>?) {
+//    // Do nothing.
+//  }
   // ! ---------------------- handel Adaptor -----------------------------------------
 
   // when cam changes
