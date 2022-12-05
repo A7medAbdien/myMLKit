@@ -139,37 +139,9 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
       return
     }
 
-    requestDetectInImage(
-      InputImage.fromBitmap(bitmap!!,image.imageInfo.rotationDegrees),
-      graphicOverlay,
-      /* originalCameraImage= */ bitmap,
-      /* shouldShowFps= */ true,
-      frameStartMs
-    )
-      // When the image is from CameraX analysis use case, must call image.close() on received
-      // images when finished using them. Otherwise, new images may not be received or the camera
-      // may stall.
-      .addOnCompleteListener { image.close() }
   }
 
-  // -----------------Common processing logic-------------------------------------------------------
   // ! --------------------------------------- InputImage.fromMediaImage passed here ------------
-  private fun requestDetectInImage(
-    image: InputImage,
-    graphicOverlay: GraphicOverlay,
-    originalCameraImage: Bitmap?,
-    shouldShowFps: Boolean,
-    frameStartMs: Long
-  ): Task<T> {
-    return setUpListener(
-      detectInImage(image),
-      graphicOverlay,
-      originalCameraImage,
-      shouldShowFps,
-      frameStartMs
-    )
-  }
-
   private fun requestDetectInImage(
     image: MlImage,
     graphicOverlay: GraphicOverlay,
