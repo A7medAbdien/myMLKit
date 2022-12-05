@@ -66,25 +66,6 @@ class PoseDetectorProcessor(
   * @param  Executor
   * @param  Continuation: A function that is called to continue execution after completion of a Task.
   * */
-//  override fun detectInImage(image: InputImage): Task<PoseWithClassification> {
-//    return detector
-//      .process(image)
-//      .continueWith(
-//        classificationExecutor
-//      ) { task ->
-//        // Gets the result of the Task, if it has already completed.
-//        val pose = task.getResult()
-//        var classificationResult: List<String> = ArrayList()
-//        if (runClassification) {
-//          if (poseClassifierProcessor == null) {
-//            poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode)
-//          }
-//          classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
-//        }
-//        PoseWithClassification(pose, classificationResult)
-//      }
-//  }
-
   override fun detectInImage(image: MlImage): Task<PoseWithClassification> {
     return detector
       .process(image)
@@ -103,9 +84,6 @@ class PoseDetectorProcessor(
       }
   }
 
-//  override fun onSuccess(results: PoseWithClassification){
-////    Log.i("test", (results.pose.getPoseLandmark(0)?.position3D).toString());
-//  }
   override fun onSuccess(
     results: PoseWithClassification,
     graphicOverlay: GraphicOverlay,
