@@ -133,7 +133,7 @@ public class PreferenceUtils {
       return builder.build();
     }
   }
-
+/*
   public static PoseDetectorOptionsBase getPoseDetectorOptionsForStillImage(Context context) {
     int performanceMode =
         getModeTypePreferenceValue(
@@ -158,8 +158,7 @@ public class PreferenceUtils {
       return builder.build();
     }
   }
-
-
+*/
 
   public static boolean preferGPUForPoseDetection(Context context) {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
