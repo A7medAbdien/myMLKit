@@ -36,7 +36,7 @@ import java.util.concurrent.Executors
 class PoseDetectorProcessor(
   private val context: Context,
   options: PoseDetectorOptionsBase,
-  private val showInFrameLikelihood: Boolean,
+  private val showDistance: Boolean,
   private val visualizeZ: Boolean,
   private val rescaleZForVisualization: Boolean,
   private val runClassification: Boolean,
@@ -92,7 +92,7 @@ class PoseDetectorProcessor(
       PoseGraphic(
         graphicOverlay,
         results.pose,
-        showInFrameLikelihood,
+        showDistance,
         visualizeZ,
         rescaleZForVisualization,
         results.classificationResult

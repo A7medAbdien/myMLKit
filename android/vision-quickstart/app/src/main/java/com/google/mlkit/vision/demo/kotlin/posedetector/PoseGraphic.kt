@@ -26,7 +26,6 @@ import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import java.lang.Math.max
 import java.lang.Math.min
-import java.util.Locale
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -35,7 +34,7 @@ class PoseGraphic
 internal constructor(
   overlay: GraphicOverlay,
   private val pose: Pose,
-  private val showInFrameLikelihood: Boolean,
+  private val showDistance: Boolean,
   private val visualizeZ: Boolean,
   private val rescaleZForVisualization: Boolean,
   private val poseClassification: List<String>,
@@ -107,7 +106,7 @@ internal constructor(
 
 
     // ! ------------------------------------- Draw on nose -------------------------------------
-    if (showInFrameLikelihood) {
+    if (showDistance) {
       canvas.drawText(
         avgDistance.toString(),
         translateX(nose!!.position.x),

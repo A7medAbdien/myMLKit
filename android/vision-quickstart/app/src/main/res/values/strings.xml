@@ -62,8 +62,8 @@
     <string name="pref_key_pose_detector_prefer_gpu" translatable="false">pdpg</string>
     <string name="pref_summary_pose_detector_prefer_gpu" translatable="false">If enabled, GPU will be used as long as it is available, stable and returns correct results. In this case, the detector will not check if GPU is really faster than CPU.</string>
 
-    <!-- Strings for pose detector showInFrameLikelihood preference. -->
-    <string name="pref_title_pose_detector_show_in_frame_likelihood" translatable="false">Show in-frame likelihood</string>
+    <!-- Strings for pose detector showDistance preference. -->
+    <string name="pref_title_pose_detector_show_distance" translatable="false">Show Distance</string>
     <string name="pref_key_live_preview_pose_detector_show_in_frame_likelihood" translatable="false">lppdsifl</string>
     <string name="pref_key_still_image_pose_detector_show_in_frame_likelihood" translatable="false">sipdsifl</string>
 

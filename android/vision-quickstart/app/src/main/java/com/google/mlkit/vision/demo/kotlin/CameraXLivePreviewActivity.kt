@@ -249,7 +249,7 @@ class CameraXLivePreviewActivity :
       try {
         val poseDetectorOptions =
           PreferenceUtils.getPoseDetectorOptionsForLivePreview(this)
-        val shouldShowInFrameLikelihood =
+        val shouldshowDistance =
           PreferenceUtils.shouldShowPoseDetectionInFrameLikelihoodLivePreview(this)
         val visualizeZ = PreferenceUtils.shouldPoseDetectionVisualizeZ(this)
         val rescaleZ =
@@ -259,7 +259,7 @@ class CameraXLivePreviewActivity :
         PoseDetectorProcessor(
           this,
           poseDetectorOptions,
-          shouldShowInFrameLikelihood,
+          shouldshowDistance,
           visualizeZ,
           rescaleZ,
           runClassification,
