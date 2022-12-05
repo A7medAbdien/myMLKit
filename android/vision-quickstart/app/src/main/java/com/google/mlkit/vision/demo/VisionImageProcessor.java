@@ -25,11 +25,6 @@ import java.nio.ByteBuffer;
 public interface VisionImageProcessor {
 
 
-  /** Processes ByteBuffer image data, e.g. used for Camera1 live preview case. */
-  void processByteBuffer(
-      ByteBuffer data, FrameMetadata frameMetadata, GraphicOverlay graphicOverlay)
-      throws MlKitException;
-
   /** Processes ImageProxy image data, e.g. used for CameraX live preview case. */
   void processImageProxy(ImageProxy image, GraphicOverlay graphicOverlay) throws MlKitException;
 

@@ -100,15 +100,6 @@ public class PreferenceUtils {
     return sharedPreferences.getBoolean(prefKey, false);
   }
 
-
-
-
-
-
-
-
-
-
   public static PoseDetectorOptionsBase getPoseDetectorOptionsForLivePreview(Context context) {
     int performanceMode =
         getModeTypePreferenceValue(

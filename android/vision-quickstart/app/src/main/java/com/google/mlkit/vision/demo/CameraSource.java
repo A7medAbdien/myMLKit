@@ -562,16 +562,6 @@ public class CameraSource {
     }
   }
 
-  public void setMachineLearningFrameProcessor(VisionImageProcessor processor) {
-    synchronized (processorLock) {
-      cleanScreen();
-      if (frameProcessor != null) {
-        frameProcessor.stop();
-      }
-      frameProcessor = processor;
-    }
-  }
-
   /**
    * This runnable controls access to the underlying receiver, calling it to process frames when
    * available from the camera. This is designed to run detection on frames as fast as possible
@@ -680,16 +670,6 @@ public class CameraSource {
         // frame.
 
         try {
-          synchronized (processorLock) {
-            frameProcessor.processByteBuffer(
-                data,
-                new FrameMetadata.Builder()
-                    .setWidth(previewSize.getWidth())
-                    .setHeight(previewSize.getHeight())
-                    .setRotation(rotationDegrees)
-                    .build(),
-                graphicOverlay);
-          }
         } catch (Exception t) {
           Log.e(TAG, "Exception thrown from receiver.", t);
         } finally {

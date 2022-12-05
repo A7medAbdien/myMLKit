@@ -87,12 +87,12 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
   private var frameProcessedInOneSecondInterval = 0
   private var framesPerSecond = 0
 
-  // To keep the latest images and its metadata.
-  @GuardedBy("this") private var latestImage: ByteBuffer? = null
-  @GuardedBy("this") private var latestImageMetaData: FrameMetadata? = null
-  // To keep the images and metadata in process.
-  @GuardedBy("this") private var processingImage: ByteBuffer? = null
-  @GuardedBy("this") private var processingMetaData: FrameMetadata? = null
+//  // To keep the latest images and its metadata.
+//  @GuardedBy("this") private var latestImage: ByteBuffer? = null
+//  @GuardedBy("this") private var latestImageMetaData: FrameMetadata? = null
+//  // To keep the images and metadata in process.
+//  @GuardedBy("this") private var processingImage: ByteBuffer? = null
+//  @GuardedBy("this") private var processingMetaData: FrameMetadata? = null
 
   init {
     fpsTimer.scheduleAtFixedRate(
@@ -107,16 +107,6 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     )
   }
 
-
-  // -----------------Code for processing live preview frame from Camera1 API-----------------------
-  @Synchronized
-  override fun processByteBuffer(
-    data: ByteBuffer?,
-    frameMetadata: FrameMetadata?,
-    graphicOverlay: GraphicOverlay
-  )
-  {
-  }
 
   // ! -----------------Code for processing live preview frame from CameraX API-----------------------
   @RequiresApi(VERSION_CODES.LOLLIPOP)
@@ -150,7 +140,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     }
 
     requestDetectInImage(
-      InputImage.fromBitmap(bitmap!!,0),
+      InputImage.fromBitmap(bitmap!!,image.imageInfo.rotationDegrees),
       graphicOverlay,
       /* originalCameraImage= */ bitmap,
       /* shouldShowFps= */ true,
