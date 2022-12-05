@@ -270,7 +270,6 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     minDetectorMs = Long.MAX_VALUE
   }
 
-  protected abstract fun detectInImage(image: InputImage): Task<T>
 
   protected open fun detectInImage(image: MlImage): Task<T> {
     return Tasks.forException(
@@ -282,7 +281,6 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
   }
 
   protected abstract fun onSuccess(results: T, graphicOverlay: GraphicOverlay)
-  protected abstract fun onSuccess(results: T)
 
   protected abstract fun onFailure(e: Exception)
 
