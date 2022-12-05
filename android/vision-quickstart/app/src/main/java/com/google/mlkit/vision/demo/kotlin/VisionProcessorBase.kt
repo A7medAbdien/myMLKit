@@ -87,13 +87,6 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
   private var frameProcessedInOneSecondInterval = 0
   private var framesPerSecond = 0
 
-//  // To keep the latest images and its metadata.
-//  @GuardedBy("this") private var latestImage: ByteBuffer? = null
-//  @GuardedBy("this") private var latestImageMetaData: FrameMetadata? = null
-//  // To keep the images and metadata in process.
-//  @GuardedBy("this") private var processingImage: ByteBuffer? = null
-//  @GuardedBy("this") private var processingMetaData: FrameMetadata? = null
-
   init {
     fpsTimer.scheduleAtFixedRate(
       object : TimerTask() {
