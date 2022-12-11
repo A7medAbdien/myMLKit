@@ -76,9 +76,9 @@ class PoseDetectorProcessor(
         var classificationResult: List<String> = ArrayList()
         if (runClassification) {
           if (poseClassifierProcessor == null) {
-            poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode)
+//            poseClassifierProcessor = PoseClassifierProcessor(context, isStreamMode)
           }
-          classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
+//          classificationResult = poseClassifierProcessor!!.getPoseResult(pose)
         }
         PoseWithClassification(pose, classificationResult)
       }
