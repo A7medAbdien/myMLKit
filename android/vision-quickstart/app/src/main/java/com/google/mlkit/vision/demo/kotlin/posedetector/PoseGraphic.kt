@@ -122,24 +122,41 @@ internal constructor(
       )
 //      Log.d("Distance: ", translateY(nose.position.y).toString())
     }
-    drawTextWithRectangle(canvas, alertPaint, "Alert", (overlay!!.width.toFloat()/2)-50f, overlay!!.height.toFloat()/15)
 
+    if (avgDistance < safeDistance.toFloat()) {
+      drawTextWithRectangle(canvas,
+        alertPaint,
+        "Alert",
+        (overlay!!.width.toFloat() / 2) - 50f,
+        overlay!!.height.toFloat() / 15)
+
+    }
 
   }
 
 
-  private fun drawTextWithRectangle(canvas: Canvas, paint: Paint, text: String, x: Float, y: Float) {
+  private fun drawTextWithRectangle(
+    canvas: Canvas,
+    paint: Paint,
+    text: String,
+    x: Float,
+    y: Float,
+  ) {
     val rect = Rect()
-    val textLenth = text.length
+    val textLength = text.length
     paint.getTextBounds(text, 0, text.length, rect)
     val rectWidth = rect.width().toFloat()
     val rectHeight = rect.height().toFloat()
-    val rectX = x + textLenth/5
-    val rectY = y + textLenth/5
+    val rectX = x + textLength / 5
+    val rectY = y + textLength / 5
     val rectPaint = Paint()
     rectPaint.color = Color.RED
     rectPaint.style = Paint.Style.FILL
-    canvas.drawRect(rectX-10f, rectY- rectHeight-20f, rectX + rectWidth+20f, rectY+10f , rectPaint)
+    canvas.drawRect(rectX - 10f,
+      rectY - rectHeight - 20f,
+      rectX + rectWidth + 20f,
+      rectY + 10f,
+      rectPaint)
     canvas.drawText(text, x, y, paint)
   }
   // ! ------------------------------------- private use -----------------------------------------
