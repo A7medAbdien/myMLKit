@@ -20,6 +20,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.util.Log
 import com.google.mlkit.vision.demo.GraphicOverlay
 import com.google.mlkit.vision.demo.GraphicOverlay.Graphic
 import com.google.mlkit.vision.pose.Pose
@@ -37,8 +38,7 @@ internal constructor(
   private val visualizeZ: Boolean,
   private val rescaleZForVisualization: Boolean,
   private val poseClassification: List<String>,
-  private val safeDistance: String,
-  private val safeDistanceUOM: String,
+  private val safeDistance: Float
 ) : Graphic(overlay) {
   private var overlay = overlay
   private var zMin = java.lang.Float.MAX_VALUE
@@ -110,8 +110,9 @@ internal constructor(
     // Right body
     val rightSide = calculateDistance(rightShoulder!!, rightHip!!)
 
-    val avgDistance = (rightSide + leftSide) / 2
+    var avgDistance = (rightSide + leftSide) / 2
 
+    avgDistance = actualDistance(avgDistance)
     // ! ------------------------------------- Draw on nose -------------------------------------
     if (showDistance) {
       canvas.drawText(
@@ -123,15 +124,20 @@ internal constructor(
 //      Log.d("Distance: ", translateY(nose.position.y).toString())
     }
 
-    if (avgDistance < safeDistance.toFloat()) {
+    if (avgDistance < safeDistance) {
       drawTextWithRectangle(canvas,
         alertPaint,
         "Alert",
         (overlay!!.width.toFloat() / 2) - 50f,
         overlay!!.height.toFloat() / 15)
-
     }
+      Log.d("Distance: ", avgDistance.toString() +" " +safeDistance.toString())
 
+  }
+
+  // TODO: actualDistance coff needed
+  private fun actualDistance(avgDistance: Float): Float {
+    return avgDistance
   }
 
 

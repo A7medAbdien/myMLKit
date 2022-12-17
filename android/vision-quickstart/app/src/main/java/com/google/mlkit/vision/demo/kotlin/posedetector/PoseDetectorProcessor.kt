@@ -39,8 +39,7 @@ class PoseDetectorProcessor(
   private val rescaleZForVisualization: Boolean,
   private val runClassification: Boolean,
   private val isStreamMode: Boolean,
-  private val safeDistance: String,
-  private val safeDistanceUOM: String,
+  private val safeDistance: Float
 ) : VisionProcessorBase<PoseDetectorProcessor.PoseWithClassification>(context) {
 
   private val detector: PoseDetector
@@ -96,8 +95,7 @@ class PoseDetectorProcessor(
         visualizeZ,
         rescaleZForVisualization,
         results.classificationResult,
-        safeDistance,
-        safeDistanceUOM
+        safeDistance
       )
     )
 //    Log.i("test", (results.pose.getPoseLandmark(0)?.position3D).toString());

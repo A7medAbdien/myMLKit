@@ -253,7 +253,13 @@ class CameraXLivePreviewActivity :
         val runClassification =
           PreferenceUtils.shouldPoseDetectionRunClassification(this)
         val safeDistance = PreferenceUtils.safeDistance(this)
+        val safeDistanceFloat:Float
         val safeDistanceUOM = PreferenceUtils.safeDistanceUOM(this)
+        if (safeDistanceUOM == "Feat"){
+          safeDistanceFloat = convertFeetToMeters(safeDistance.toFloat())
+        }else{
+          safeDistanceFloat = safeDistance.toFloat();
+        }
         PoseDetectorProcessor(
           this,
           poseDetectorOptions,
@@ -262,8 +268,7 @@ class CameraXLivePreviewActivity :
           rescaleZ,
           runClassification,
           /* isStreamMode = */ true,
-          safeDistance,
-          safeDistanceUOM
+          safeDistanceFloat
         )
       } catch (e: Exception) {
         Log.e(TAG, "Can not create image processor: $selectedModel", e)
@@ -323,6 +328,10 @@ class CameraXLivePreviewActivity :
       }
     )
     cameraProvider!!.bindToLifecycle(/* lifecycleOwner= */ this, cameraSelector!!, analysisUseCase)
+  }
+
+  private fun convertFeetToMeters(feet: Float): Float {
+    return (feet / 3.28084).toFloat()
   }
 
   companion object {
