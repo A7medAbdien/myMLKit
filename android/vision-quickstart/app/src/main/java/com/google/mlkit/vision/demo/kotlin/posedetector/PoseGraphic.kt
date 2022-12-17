@@ -93,13 +93,13 @@ internal constructor(
 
     drawLine(canvas, leftShoulder, rightShoulder, whitePaint)
     drawLine(canvas, leftHip, rightHip, whitePaint)
-
-    // Left body
     drawLine(canvas, leftShoulder, leftHip, leftPaint)
-    val leftSide = calculateDistance(leftShoulder!!, leftHip!!)
-
-    // Right body
     drawLine(canvas, rightShoulder, rightHip, rightPaint)
+
+    // ! ------------------------------------- Get distance -------------------------------------
+    // Left body
+    val leftSide = calculateDistance(leftShoulder!!, leftHip!!)
+    // Right body
     val rightSide = calculateDistance(rightShoulder!!, rightHip!!)
 
     val avgDistance = (rightSide + leftSide) / 2
