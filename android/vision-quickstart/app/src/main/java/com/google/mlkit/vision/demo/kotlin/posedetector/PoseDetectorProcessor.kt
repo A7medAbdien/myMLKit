@@ -20,15 +20,13 @@ import android.content.Context
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.android.odml.image.MlImage
-import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.demo.GraphicOverlay
-import com.google.mlkit.vision.demo.kotlin.posedetector.classification.PoseClassifierProcessor
 import com.google.mlkit.vision.demo.kotlin.VisionProcessorBase
+import com.google.mlkit.vision.demo.kotlin.posedetector.classification.PoseClassifierProcessor
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
 import com.google.mlkit.vision.pose.PoseDetector
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase
-import java.util.ArrayList
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -41,6 +39,8 @@ class PoseDetectorProcessor(
   private val rescaleZForVisualization: Boolean,
   private val runClassification: Boolean,
   private val isStreamMode: Boolean,
+  private val safeDistance: String,
+  private val safeDistanceUOM: String,
 ) : VisionProcessorBase<PoseDetectorProcessor.PoseWithClassification>(context) {
 
   private val detector: PoseDetector
@@ -95,7 +95,9 @@ class PoseDetectorProcessor(
         showDistance,
         visualizeZ,
         rescaleZForVisualization,
-        results.classificationResult
+        results.classificationResult,
+        safeDistance,
+        safeDistanceUOM
       )
     )
 //    Log.i("test", (results.pose.getPoseLandmark(0)?.position3D).toString());

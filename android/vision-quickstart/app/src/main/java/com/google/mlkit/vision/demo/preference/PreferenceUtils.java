@@ -20,26 +20,27 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build.VERSION_CODES;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.camera.core.CameraSelector;
+
 import com.google.android.gms.common.images.Size;
 import com.google.common.base.Preconditions;
-import com.google.mlkit.common.model.LocalModel;
 import com.google.mlkit.vision.demo.CameraSource;
 import com.google.mlkit.vision.demo.CameraSource.SizePair;
 import com.google.mlkit.vision.demo.R;
-import com.google.mlkit.vision.face.FaceDetectorOptions;
-import com.google.mlkit.vision.facemesh.FaceMeshDetectorOptions;
-import com.google.mlkit.vision.objects.ObjectDetectorOptionsBase.DetectorMode;
-import com.google.mlkit.vision.objects.custom.CustomObjectDetectorOptions;
-import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions;
+import com.google.mlkit.vision.demo.kotlin.CameraXLivePreviewActivity;
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase;
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions;
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions;
 
-/** Utility class to retrieve shared preferences. */
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Utility class to retrieve shared preferences.
+ */
 public class PreferenceUtils {
 
   private static final int POSE_DETECTOR_PERFORMANCE_MODE_FAST = 1;
@@ -92,6 +93,18 @@ public class PreferenceUtils {
     } catch (Exception e) {
       return null;
     }
+  }
+
+  public static String safeDistance(Context context) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String prefKey = context.getString(R.string.pref_key_safe_distance);
+    return sharedPreferences.getString(prefKey, null);
+  }
+
+  public static String safeDistanceUOM(Context context) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String prefKey = context.getString(R.string.pref_key_safe_distance_uom);
+    return sharedPreferences.getString(prefKey, null);
   }
 
   public static boolean shouldHideDetectionInfo(Context context) {
@@ -209,5 +222,4 @@ public class PreferenceUtils {
   }
 
 
-  private PreferenceUtils() {}
 }

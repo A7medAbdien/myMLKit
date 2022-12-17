@@ -19,18 +19,14 @@ package com.google.mlkit.vision.demo.kotlin
 import android.content.Intent
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.annotation.RequiresApi
-import androidx.camera.core.CameraInfoUnavailableException
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
+import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -256,6 +252,8 @@ class CameraXLivePreviewActivity :
           PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
         val runClassification =
           PreferenceUtils.shouldPoseDetectionRunClassification(this)
+        val safeDistance = PreferenceUtils.safeDistance(this)
+        val safeDistanceUOM = PreferenceUtils.safeDistanceUOM(this)
         PoseDetectorProcessor(
           this,
           poseDetectorOptions,
@@ -263,7 +261,9 @@ class CameraXLivePreviewActivity :
           visualizeZ,
           rescaleZ,
           runClassification,
-          /* isStreamMode = */ true
+          /* isStreamMode = */ true,
+          safeDistance,
+          safeDistanceUOM
         )
       } catch (e: Exception) {
         Log.e(TAG, "Can not create image processor: $selectedModel", e)

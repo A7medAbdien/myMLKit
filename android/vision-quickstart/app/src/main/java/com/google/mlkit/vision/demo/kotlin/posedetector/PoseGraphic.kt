@@ -38,6 +38,8 @@ internal constructor(
   private val visualizeZ: Boolean,
   private val rescaleZForVisualization: Boolean,
   private val poseClassification: List<String>,
+  private val safeDistance: String,
+  private val safeDistanceUOM: String,
 ) : Graphic(overlay) {
   private var zMin = java.lang.Float.MAX_VALUE
   private var zMax = java.lang.Float.MIN_VALUE
@@ -65,7 +67,7 @@ internal constructor(
   }
 
   override fun draw(canvas: Canvas) {
-
+    Log.d(TAG + "SafeDistance", "$safeDistance  $safeDistanceUOM")
     val landmarks = pose.allPoseLandmarks
     if (landmarks.isEmpty()) {
       return
@@ -176,7 +178,7 @@ internal constructor(
   }
 
   companion object {
-
+    private val TAG = "PoseGraphic"
     private val DOT_RADIUS = 8.0f
     private val IN_FRAME_LIKELIHOOD_TEXT_SIZE = 30.0f
     private val STROKE_WIDTH = 10.0f
