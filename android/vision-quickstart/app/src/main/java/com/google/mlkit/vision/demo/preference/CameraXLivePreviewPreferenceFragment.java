@@ -103,8 +103,8 @@ public class CameraXLivePreviewPreferenceFragment extends LivePreviewPreferenceF
   }
 
   private void setSafeDistanceUOM(
-      @StringRes int key) {
-    ListPreference pref = (ListPreference) findPreference(getString(key));
+      @StringRes int UOMPrefKeyId) {
+    ListPreference pref = (ListPreference) findPreference(getString(UOMPrefKeyId));
     String[] entries;
     entries =
         new String[]{
@@ -118,21 +118,22 @@ public class CameraXLivePreviewPreferenceFragment extends LivePreviewPreferenceF
         (preference, newValue) -> {
           String newStringValue = (String) newValue;
           pref.setSummary(newStringValue);
+          PreferenceUtils.saveString(getActivity(), UOMPrefKeyId, newStringValue);
           return true;
         });
   }
 
   private void setSafeDistance(
-      @StringRes int key) {
-    // First, get a reference to the EditTextPreference
-    EditTextPreference pref = (EditTextPreference) findPreference(getString(key));
+      @StringRes int safeDistancePrefKeyId) {
 
-    // Set an OnPreferenceChangeListener on the EditTextPreference to listen for changes to the value
+    EditTextPreference pref = (EditTextPreference) findPreference(getString(safeDistancePrefKeyId));
+
     pref.setSummary(pref.getText() == null ? "Default: 200" : "Default: " + pref.getText());
     pref.setOnPreferenceChangeListener(
         (preference, newValue) -> {
           String newStringValue = (String) newValue;
           pref.setSummary("Current distance: " + newStringValue);
+          PreferenceUtils.saveString(getActivity(), safeDistancePrefKeyId, newStringValue);
           return true;
         });
   }
