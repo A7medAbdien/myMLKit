@@ -19,7 +19,7 @@ package com.google.mlkit.vision.demo.kotlin.posedetector
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.util.Log
+import android.graphics.Rect
 import com.google.mlkit.vision.demo.GraphicOverlay
 import com.google.mlkit.vision.demo.GraphicOverlay.Graphic
 import com.google.mlkit.vision.pose.Pose
@@ -28,7 +28,6 @@ import java.lang.Math.max
 import java.lang.Math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
-
 /** Draw the detected pose in preview. */
 class PoseGraphic
 internal constructor(
@@ -41,9 +40,11 @@ internal constructor(
   private val safeDistance: String,
   private val safeDistanceUOM: String,
 ) : Graphic(overlay) {
+  private var overlay = overlay
   private var zMin = java.lang.Float.MAX_VALUE
   private var zMax = java.lang.Float.MIN_VALUE
   private val classificationTextPaint: Paint
+  private val alertPaint: Paint
   private val leftPaint: Paint
   private val rightPaint: Paint
   private val whitePaint: Paint
@@ -53,6 +54,11 @@ internal constructor(
     classificationTextPaint.color = Color.WHITE
     classificationTextPaint.textSize = POSE_CLASSIFICATION_TEXT_SIZE
     classificationTextPaint.setShadowLayer(5.0f, 0f, 0f, Color.BLACK)
+
+    alertPaint = Paint()
+    alertPaint.color = Color.WHITE
+    alertPaint.textSize = 100F
+    alertPaint.setShadowLayer(5.0f, 0f, 0f, Color.BLACK)
 
     whitePaint = Paint()
     whitePaint.strokeWidth = STROKE_WIDTH
@@ -67,7 +73,7 @@ internal constructor(
   }
 
   override fun draw(canvas: Canvas) {
-    Log.d(TAG + "SafeDistance", "$safeDistance  $safeDistanceUOM")
+//    Log.d(TAG + "SafeDistance", "$safeDistance  $safeDistanceUOM")
     val landmarks = pose.allPoseLandmarks
     if (landmarks.isEmpty()) {
       return
@@ -106,7 +112,6 @@ internal constructor(
 
     val avgDistance = (rightSide + leftSide) / 2
 
-
     // ! ------------------------------------- Draw on nose -------------------------------------
     if (showDistance) {
       canvas.drawText(
@@ -115,10 +120,28 @@ internal constructor(
         translateY(nose.position.y),
         whitePaint
       )
-      Log.d("Distance: ", avgDistance.toString())
+//      Log.d("Distance: ", translateY(nose.position.y).toString())
     }
+    drawTextWithRectangle(canvas, alertPaint, "Alert", (overlay!!.width.toFloat()/2)-50f, overlay!!.height.toFloat()/15)
+
+
   }
 
+
+  private fun drawTextWithRectangle(canvas: Canvas, paint: Paint, text: String, x: Float, y: Float) {
+    val rect = Rect()
+    val textLenth = text.length
+    paint.getTextBounds(text, 0, text.length, rect)
+    val rectWidth = rect.width().toFloat()
+    val rectHeight = rect.height().toFloat()
+    val rectX = x + textLenth/5
+    val rectY = y + textLenth/5
+    val rectPaint = Paint()
+    rectPaint.color = Color.RED
+    rectPaint.style = Paint.Style.FILL
+    canvas.drawRect(rectX-10f, rectY- rectHeight-20f, rectX + rectWidth+20f, rectY+10f , rectPaint)
+    canvas.drawText(text, x, y, paint)
+  }
   // ! ------------------------------------- private use -----------------------------------------
 
   private fun calculateDistance(x: Float, y: Float, z: Float): Float {

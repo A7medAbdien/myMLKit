@@ -23,34 +23,18 @@ import android.os.Build.VERSION_CODES
 import android.os.SystemClock
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.GuardedBy
 import androidx.annotation.RequiresApi
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.TaskExecutors
-import com.google.android.gms.tasks.Tasks
-import com.google.android.odml.image.BitmapMlImageBuilder
-import com.google.android.odml.image.ByteBufferMlImageBuilder
+import com.google.android.gms.tasks.*
 import com.google.android.odml.image.MediaMlImageBuilder
 import com.google.android.odml.image.MlImage
 import com.google.mlkit.common.MlKitException
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.demo.BitmapUtils
-import com.google.mlkit.vision.demo.CameraImageGraphic
-import com.google.mlkit.vision.demo.FrameMetadata
-import com.google.mlkit.vision.demo.GraphicOverlay
-import com.google.mlkit.vision.demo.InferenceInfoGraphic
-import com.google.mlkit.vision.demo.ScopedExecutor
-import com.google.mlkit.vision.demo.VisionImageProcessor
+import com.google.mlkit.vision.demo.*
 import com.google.mlkit.vision.demo.preference.PreferenceUtils
 import java.lang.Math.max
 import java.lang.Math.min
-import java.nio.ByteBuffer
-import java.util.Timer
-import java.util.TimerTask
+import java.util.*
 
 /**
  * Abstract base class for ML Kit frame processors. Subclasses need to implement {@link
@@ -212,10 +196,6 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
             graphicOverlay.add(CameraImageGraphic(graphicOverlay, originalCameraImage))
           }
 
-          // ! ---------------------------------- Rendering the result ----------------------------
-//          this@VisionProcessorBase.onSuccess(results)
-          this@VisionProcessorBase.onSuccess(results,graphicOverlay)
-
           // this render the FPS and those stuff
           if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.context)) {
             graphicOverlay.add(
@@ -227,6 +207,10 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
               )
             )
           }
+
+          // ! ---------------------------------- Rendering the result ----------------------------
+//          this@VisionProcessorBase.onSuccess(results)
+          this@VisionProcessorBase.onSuccess(results,graphicOverlay)
 
           graphicOverlay.postInvalidate()
         }
