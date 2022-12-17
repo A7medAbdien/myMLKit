@@ -48,6 +48,7 @@
     <string name="pref_key_info_hide" translatable="false">ih</string>
 
     <!-- Strings for safe distance-->
+    <string name="pref_category_title_safe_distance" translatable="false">Safe Distance</string>
     <string name="pref_title_safe_distance" translatable="false">Edit safe distance</string>
     <string name="pref_key_safe_distance" translatable="false">sd</string>
     <string name="pref_title_safe_distance_uom" translatable="false">Edit Unit of measurement</string>

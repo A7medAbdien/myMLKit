@@ -45,7 +45,7 @@
         android:title="@string/pref_title_info_hide"/>
   </PreferenceCategory>
 
-  <PreferenceCategory android:title="Safe Distance">
+  <PreferenceCategory android:title="@string/pref_category_title_safe_distance">
     <EditTextPreference
         android:inputType="number"
         android:key="@string/pref_key_safe_distance"
