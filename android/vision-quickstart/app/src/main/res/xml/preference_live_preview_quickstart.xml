@@ -45,6 +45,21 @@
         android:title="@string/pref_title_info_hide"/>
   </PreferenceCategory>
 
+  <PreferenceCategory android:title="Safe Distance">
+    <EditTextPreference
+        android:inputType="number"
+        android:key="@string/pref_key_safe_distance"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_safe_distance" />
+    <ListPreference
+        android:key="@string/pref_key_safe_distance_uom"
+        android:persistent="true"
+        android:title="@string/pref_title_safe_distance_uom"
+        />
+
+  </PreferenceCategory>
+
   <PreferenceCategory android:title="@string/pref_category_pose_detection">
     <ListPreference
         android:defaultValue="@string/pref_entry_values_pose_detector_performance_mode_fast"

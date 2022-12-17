@@ -47,6 +47,11 @@
     <string name="pref_title_info_hide" translatable="false">Hide detection info</string>
     <string name="pref_key_info_hide" translatable="false">ih</string>
 
+    <!-- Strings for safe distance-->
+    <string name="pref_title_safe_distance" translatable="false">Edit safe distance</string>
+    <string name="pref_key_safe_distance" translatable="false">sd</string>
+    <string name="pref_title_safe_distance_uom" translatable="false">Edit Unit of measurement</string>
+    <string name="pref_key_safe_distance_uom" translatable="false">sdu</string>
 
     <!-- Strings for pose detector performance mode preference. -->
     <string name="pref_title_pose_detector_performance_mode" translatable="false">Performance mode</string>
@@ -77,6 +82,7 @@
     <string name="pref_title_pose_detector_run_classification" translatable="false">Run Classification</string>
     <string name="pref_key_pose_detector_run_classification" translatable="false">pdrc</string>
     <string name="pref_summary_pose_detector_run_classification" translatable="false">Classify squat and pushup poses. Count reps in streaming mode. To get the best classification results based on the current sample data, face the camera side way and make sure your full body is in the frame.</string>
+    <string name="safe_distance">Safe Distance</string>
 
 
 </resources>

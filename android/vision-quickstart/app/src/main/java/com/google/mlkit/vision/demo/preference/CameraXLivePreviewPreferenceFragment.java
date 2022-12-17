@@ -23,18 +23,24 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Build.VERSION_CODES;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceCategory;
 import android.util.Size;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.camera.core.CameraSelector;
+
 import com.google.mlkit.vision.demo.R;
+
 import java.util.Arrays;
 import java.util.List;
 
-/** Configures CameraX live preview demo settings. */
+/**
+ * Configures CameraX live preview demo settings.
+ */
 @RequiresApi(VERSION_CODES.LOLLIPOP)
 public class CameraXLivePreviewPreferenceFragment extends LivePreviewPreferenceFragment {
 
@@ -51,6 +57,9 @@ public class CameraXLivePreviewPreferenceFragment extends LivePreviewPreferenceF
         R.string.pref_key_camerax_rear_camera_target_resolution, CameraSelector.LENS_FACING_BACK);
     setUpCameraXTargetAnalysisSizePreference(
         R.string.pref_key_camerax_front_camera_target_resolution, CameraSelector.LENS_FACING_FRONT);
+
+    setSafeDistanceUOM(R.string.pref_key_safe_distance_uom);
+    setSafeDistance(R.string.pref_key_safe_distance);
   }
 
   private void setUpCameraXTargetAnalysisSizePreference(
@@ -69,16 +78,16 @@ public class CameraXLivePreviewPreferenceFragment extends LivePreviewPreferenceF
       }
     } else {
       entries =
-          new String[] {
-            "2000x2000",
-            "1600x1600",
-            "1200x1200",
-            "1000x1000",
-            "800x800",
-            "600x600",
-            "400x400",
-            "200x200",
-            "100x100",
+          new String[]{
+              "2000x2000",
+              "1600x1600",
+              "1200x1200",
+              "1000x1000",
+              "800x800",
+              "600x600",
+              "400x400",
+              "200x200",
+              "100x100",
           };
     }
     pref.setEntries(entries);
@@ -92,6 +101,42 @@ public class CameraXLivePreviewPreferenceFragment extends LivePreviewPreferenceF
           return true;
         });
   }
+
+  private void setSafeDistanceUOM(
+      @StringRes int key) {
+    ListPreference pref = (ListPreference) findPreference(getString(key));
+    String[] entries;
+    entries =
+        new String[]{
+            "Meter",
+            "Feat"
+        };
+    pref.setEntries(entries);
+    pref.setEntryValues(entries);
+    pref.setSummary(pref.getEntry() == null ? "Default: Meter" : pref.getEntry());
+    pref.setOnPreferenceChangeListener(
+        (preference, newValue) -> {
+          String newStringValue = (String) newValue;
+          pref.setSummary(newStringValue);
+          return true;
+        });
+  }
+
+  private void setSafeDistance(
+      @StringRes int key) {
+    // First, get a reference to the EditTextPreference
+    EditTextPreference pref = (EditTextPreference) findPreference(getString(key));
+
+    // Set an OnPreferenceChangeListener on the EditTextPreference to listen for changes to the value
+    pref.setSummary(pref.getText() == null ? "Default: 200" : "Default: " + pref.getText());
+    pref.setOnPreferenceChangeListener(
+        (preference, newValue) -> {
+          String newStringValue = (String) newValue;
+          pref.setSummary("Current distance: " + newStringValue);
+          return true;
+        });
+  }
+
 
   @Nullable
   public static CameraCharacteristics getCameraCharacteristics(
