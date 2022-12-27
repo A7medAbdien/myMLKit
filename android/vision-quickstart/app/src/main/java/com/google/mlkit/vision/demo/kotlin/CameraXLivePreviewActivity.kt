@@ -252,6 +252,9 @@ class CameraXLivePreviewActivity :
           PreferenceUtils.shouldPoseDetectionRescaleZForVisualization(this)
         val runClassification =
           PreferenceUtils.shouldPoseDetectionRunClassification(this)
+//        Log.d(TAG + "Safe", PreferenceUtils.safeDistance(this).toString())
+//        PreferenceUtils.setSafeDistance(this,"500")
+//        Log.d(TAG + "Safe", PreferenceUtils.safeDistance(this).toString())
         val safeDistance = PreferenceUtils.safeDistance(this)
         val safeDistanceFloat:Float
         val safeDistanceUOM = PreferenceUtils.safeDistanceUOM(this)
