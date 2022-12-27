@@ -23,10 +23,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -57,6 +56,29 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
       startActivity(intent)
     }
     updateShownDistance()
+    val buttonShowPopup = findViewById<Button>(R.id.button)
+    buttonShowPopup.setOnClickListener {
+      showPopup()
+    }
+  }
+
+  private fun showPopup() {
+    val builder = AlertDialog.Builder(this)
+    builder.setTitle("Enter your name")
+    // Set up the input
+    val input = EditText(this)
+    builder.setView(input)
+
+    // Set up the buttons
+    builder.setPositiveButton("OK") { dialog, which ->
+      val inputText = input.text.toString()
+      Toast.makeText(this, "Your name is: $inputText", Toast.LENGTH_SHORT).show()
+    }
+    builder.setNegativeButton("Cancel") { dialog, which ->
+      dialog.cancel()
+    }
+
+    builder.show()
   }
   private fun convertFeetToMeters(feet: Float): Float {
     return (feet / 3.28084).toFloat()
