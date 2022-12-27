@@ -257,10 +257,10 @@ class CameraXLivePreviewActivity :
         val safeDistance = PreferenceUtils.safeDistance(this)
         val safeDistanceFloat:Float
         val safeDistanceUOM = PreferenceUtils.safeDistanceUOM(this)
-        if (safeDistanceUOM == "Feat"){
-          safeDistanceFloat = convertFeetToMeters(safeDistance.toFloat())
+        safeDistanceFloat = if (safeDistanceUOM == "Feat"){
+          convertFeetToMeters(safeDistance.toFloat())
         }else{
-          safeDistanceFloat = safeDistance.toFloat();
+          safeDistance.toFloat();
         }
         PoseDetectorProcessor(
           this,

@@ -25,10 +25,12 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.mlkit.vision.demo.preference.PreferenceUtils
 import com.google.mlkit.vision.demo.preference.SettingsActivity
 
 class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
@@ -54,8 +56,28 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
       intent.putExtra(SettingsActivity.EXTRA_LAUNCH_SOURCE, SettingsActivity.LaunchSource.CAMERAX_LIVE_PREVIEW)
       startActivity(intent)
     }
+    updateShownDistance()
+  }
+  private fun convertFeetToMeters(feet: Float): Float {
+    return (feet / 3.28084).toFloat()
   }
 
+  override fun onResume() {
+    super.onResume()
+    updateShownDistance()
+  }
+
+  private fun updateShownDistance(){
+    val textView = findViewById<TextView>(R.id.safeDistance)
+    val safeDistance = PreferenceUtils.safeDistance(this)
+    val safeDistanceUOM = PreferenceUtils.safeDistanceUOM(this)
+    val safeDistanceFloat = if (safeDistanceUOM == "Feat"){
+      convertFeetToMeters(safeDistance.toFloat())
+    }else{
+      safeDistance.toFloat();
+    }
+    textView.setText("${safeDistanceFloat.format(1)} $safeDistanceUOM").toString()
+  }
   private fun allRuntimePermissionsGranted(): Boolean {
     for (permission in REQUIRED_RUNTIME_PERMISSIONS) {
       permission?.let {
@@ -66,7 +88,7 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
     }
     return true
   }
-
+  private fun Float.format(digits: Int) = "%.${digits}f".format(this)
   private fun getRuntimePermissions() {
     val permissionsToRequest = ArrayList<String>()
     for (permission in REQUIRED_RUNTIME_PERMISSIONS) {
