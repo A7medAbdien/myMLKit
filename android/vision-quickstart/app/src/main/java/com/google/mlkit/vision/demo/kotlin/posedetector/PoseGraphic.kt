@@ -123,8 +123,9 @@ internal constructor(
       )
 //      Log.d("Distance: ", translateY(nose.position.y).toString())
     }
-
-    if (avgDistance < safeDistance) {
+    // ! if the actual average distance less than the safe distance show alert
+    // ! if the landmarks average distance large means we close, so we need it te be smaller to be far
+    if (avgDistance > safeDistance) {
       drawTextWithRectangle(canvas,
         alertPaint,
         "Alert",
