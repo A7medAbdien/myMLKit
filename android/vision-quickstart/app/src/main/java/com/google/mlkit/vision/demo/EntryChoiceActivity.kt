@@ -24,10 +24,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.mlkit.vision.demo.preference.SettingsActivity
 
 class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -35,6 +37,9 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_vision_entry_choice)
+    if (!allRuntimePermissionsGranted()) {
+      getRuntimePermissions()
+    }
     findViewById<Button>(R.id.startCamera).setOnClickListener {
       val intent =
         Intent(
@@ -43,11 +48,12 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
         )
       startActivity(intent)
     }
-
-    if (!allRuntimePermissionsGranted()) {
-      getRuntimePermissions()
+    val settingsButton = findViewById<ImageButton>(R.id.openSettings)
+    settingsButton.setOnClickListener {
+      val intent = Intent(applicationContext, SettingsActivity::class.java)
+      intent.putExtra(SettingsActivity.EXTRA_LAUNCH_SOURCE, SettingsActivity.LaunchSource.CAMERAX_LIVE_PREVIEW)
+      startActivity(intent)
     }
-//    startActivity(Intent(this, CameraXLivePreviewActivity::class.java))
   }
 
   private fun allRuntimePermissionsGranted(): Boolean {

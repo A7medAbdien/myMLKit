@@ -81,7 +81,7 @@
             android:textStyle="bold" />
 
         <ImageButton
-            android:id="@+id/imageButton9"
+            android:id="@+id/openSettings"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_alignParentEnd="true"
