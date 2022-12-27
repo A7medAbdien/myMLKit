@@ -101,6 +101,15 @@ public class PreferenceUtils {
     return sharedPreferences.getString(prefKey, null);
   }
 
+  public static void setSafeDistance(Context context, String safeDistance) {
+    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    String prefKey = context.getString(R.string.pref_key_safe_distance);
+    SharedPreferences.Editor editor = sharedPreferences.edit();
+    editor.putString(prefKey, safeDistance);
+    editor.apply();
+  }
+
+
   public static String safeDistanceUOM(Context context) {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     String prefKey = context.getString(R.string.pref_key_safe_distance_uom);
