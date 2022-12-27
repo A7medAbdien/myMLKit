@@ -84,6 +84,10 @@
     <string name="pref_key_pose_detector_run_classification" translatable="false">pdrc</string>
     <string name="pref_summary_pose_detector_run_classification" translatable="false">Classify squat and pushup poses. Count reps in streaming mode. To get the best classification results based on the current sample data, face the camera side way and make sure your full body is in the frame.</string>
     <string name="safe_distance">Safe Distance</string>
+    <string name="start_with_us">Start with us…</string>
+    <string name="start_text">Open the camera to help you check if you keeping a safe distance or not</string>
+    <string name="open_camera">Open camera</string>
+    <string name="adjustments">Adjustments</string>
 
 
 </resources>

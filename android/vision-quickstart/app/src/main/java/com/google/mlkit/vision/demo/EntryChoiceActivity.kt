@@ -22,14 +22,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
-import android.widget.TextView
+import android.widget.Button
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.mlkit.vision.demo.kotlin.CameraXLivePreviewActivity
-import java.util.ArrayList
 
 class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -37,7 +35,7 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_vision_entry_choice)
-    findViewById<TextView>(R.id.kotlin_entry_point).setOnClickListener {
+    findViewById<Button>(R.id.startCamera).setOnClickListener {
       val intent =
         Intent(
           this@EntryChoiceActivity,
