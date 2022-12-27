@@ -23,7 +23,6 @@ import android.util.Log
 import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.Toast
-import android.widget.ToggleButton
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
@@ -99,8 +98,8 @@ class CameraXLivePreviewActivity :
     }
 
     // cam switching
-    val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
-    facingSwitch.setOnCheckedChangeListener(this)
+//    val facingSwitch = findViewById<ToggleButton>(R.id.facing_switch)
+//    facingSwitch.setOnCheckedChangeListener(this)
 
     val settingsButton = findViewById<ImageView>(R.id.settings_button)
     settingsButton.setOnClickListener {
