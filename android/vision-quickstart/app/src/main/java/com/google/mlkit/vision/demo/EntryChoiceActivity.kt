@@ -29,6 +29,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.mlkit.vision.demo.kotlin.CameraXLivePreviewActivity
 import com.google.mlkit.vision.demo.preference.PreferenceUtils
 import com.google.mlkit.vision.demo.preference.SettingsActivity
 
@@ -42,12 +43,7 @@ class EntryChoiceActivity : AppCompatActivity(), ActivityCompat.OnRequestPermiss
       getRuntimePermissions()
     }
     findViewById<Button>(R.id.startCamera).setOnClickListener {
-      val intent =
-        Intent(
-          this@EntryChoiceActivity,
-          com.google.mlkit.vision.demo.kotlin.ChooserActivity::class.java
-        )
-      startActivity(intent)
+      startActivity(Intent(this, CameraXLivePreviewActivity::class.java))
     }
     val settingsButton = findViewById<ImageButton>(R.id.openSettings)
     settingsButton.setOnClickListener {
